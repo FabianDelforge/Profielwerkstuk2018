@@ -4,8 +4,9 @@ pygame.init()
 
 display_width = 800
 display_height = 600
+FPS = 60
 
-gameDisplay = pygame.display.set_mode((display_width, display_height))
+screen = pygame.display.set_mode((display_width, display_height))
 pygame.display.set_caption('Profielwerkstuk2018')
 
 clock = pygame.time.Clock()
@@ -103,31 +104,60 @@ class player:
             else:
                 self.image = self.standing_frame_left
 
-                
+
+class Game:
+    def __init__(self):
+        self.running = True
+
+    def new(self):
+        pass
+
+    def run(self):
+        self.playing = True
+        while self.playing:
+            self.events()
+            self.update()
+            self.draw()
+           
+        
+            player.update()
+            player.animate()
+        
+            screen.blit(player.image, (player.pos.x, player.pos.y))
+            pygame.display.update()
+            clock.tick(FPS)
+
+    def update(self):
+        pass
+
+    def events(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                if self.playing:
+                    self.playing = False
+                self.running = False
+
+    def draw(self):
+        screen.fill((100,200,255))
+
+    def show_start_screen(self):
+        pass
+
+    def show_go_screen(self):
+        pass
+        
+
     
+Game = Game()
         
 player = player()
 player.load_images()
 
+
+while Game.running:
+    Game.new()
+    Game.run()
+    Game.show_go_screen()
     
-def gameLoop():
-       
-    gameExit = False
-    while not gameExit:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                gameExit = True
-        
-        gameDisplay.fill((100,200,255))
-        player.update()
-        player.animate()
-        
-        gameDisplay.blit(player.image, (player.pos.x, player.pos.y))
-        pygame.display.update()
-        clock.tick(60)
-
-
-
-gameLoop()
 pygame.quit()
 quit()
