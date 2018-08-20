@@ -16,8 +16,9 @@ pygame.display.set_caption('Profielwerkstuk2018')
 
 clock = pygame.time.Clock()
 
-class player:
+class player(pygame.sprite.Sprite):
     def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
         self.walking = False
         self.jumping = False
         self.current_frame = 0
@@ -57,7 +58,7 @@ class player:
             self.walking_frames_left.append(pygame.transform.flip(frame, True, False))
         
     def update(self):
-        self.acc = vec(0,0.5)
+        self.acc = vec(0,0)
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
             self.acc.x = -player_acc
@@ -68,13 +69,15 @@ class player:
         self.acc.x += self.vel.x * player_friction
         #motion
         self.vel += self.acc
+        if abs(self.vel.x) < 0.1:
+            self.vel.x = 0
         self.pos += self.vel + 0.5*self.acc
 
         #dont run off the screen
-        if self.pos.x >  display_width:
-            self.pos.x = -player_width
-        if self.pos.x < -player_width:
-            self.pos.x = display_width
+        if self.pos.x > display_width + self.rect.width/2:
+            self.pos.x = -self.rect.width/2
+        if self.pos.x < -self.rect.width/2:
+            self.pos.x = display_width + self.rect.width/2
         
         self.rect.center = self.pos
 
@@ -103,14 +106,16 @@ class player:
                     else:
                         self.image = self.walking_frames_left[self.current_frame]
                     self.goingRight = 0
+                self.rect = self.image.get_rect()
         else:
             if self.goingRight:
                 self.image = self.standing_frame_right
             else:
                 self.image = self.standing_frame_left
 
-class Platform:
+class Platform(pygame.sprite.Sprite):
     def __init__(self, x, y, w, h):
+        pygame.sprite.Sprite.__init__(self)
         self.image = pygame.Surface((w, h))
         self.rect = self.image.get_rect()
         self.rect.x = x
@@ -122,8 +127,10 @@ class Game:
         self.running = True
 
     def new(self):
+        self.all_sprites = pygame.sprite.Group()
+        self.platforms = pygame.sprite.Group()
         self.player = player()
-        self.player.load_images()
+        self.all_sprites.add(self.player)
         self.platform = Platform(100, 500, display_width, 30)
 
     def run(self):
@@ -137,12 +144,12 @@ class Game:
             self.player.update()
             self.player.animate()
         
-            screen.blit(self.player.image, (self.player.pos.x, self.player.pos.y))
+
             pygame.display.update()
             clock.tick(FPS)
 
     def update(self):
-        pass
+        self.all_sprites.update()
 
     def events(self):
         for event in pygame.event.get():
@@ -153,6 +160,7 @@ class Game:
 
     def draw(self):
         screen.fill((100,200,255))
+        self.all_sprites.draw(screen)
 
     def show_start_screen(self):
         pass
