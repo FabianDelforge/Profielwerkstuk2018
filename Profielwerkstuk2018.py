@@ -155,8 +155,7 @@ class Game:
     def events(self):
         for event in pg.event.get():
             if event.type == pg.QUIT:
-                if self.playing:
-                    self.playing = False
+                self.playing = False
                 self.running = False
 
     def draw(self):
