@@ -1,8 +1,7 @@
-import pygame as pg
-import glob
-vec = pg.math.Vector2
+import pygame, glob
+vec = pygame.math.Vector2
 
-pg.init()
+pygame.init()
 
 display_width = 800
 display_height = 600
@@ -12,14 +11,14 @@ FPS = 60
 player_acc = 0.5
 player_friction = -0.12
 
-screen = pg.display.set_mode((display_width, display_height))
-pg.display.set_caption('Profielwerkstuk2018')
+screen = pygame.display.set_mode((display_width, display_height))
+pygame.display.set_caption('Profielwerkstuk2018')
 
-clock = pg.time.Clock()
+clock = pygame.time.Clock()
 
-class player(pg.sprite.Sprite):
+class player(pygame.sprite.Sprite):
     def __init__(self):
-        pg.sprite.Sprite.__init__(self)
+        pygame.sprite.Sprite.__init__(self)
         self.walking = False
         self.jumping = False
         self.current_frame = 0
@@ -36,34 +35,34 @@ class player(pg.sprite.Sprite):
 
             
     def load_images(self):
-        self.standing_frame_right = pg.image.load("\Profielwerkstuk\Character Sprite Templates\Sprite Templates PNG\pws_character_sprite_template_rest.png")
-        self.standing_frame_right = pg.transform.scale(self.standing_frame_right,(player_width,player_height))
-        self.walking_frame_startup_right = pg.image.load("\Profielwerkstuk\Character Sprite Templates\Sprite Templates PNG\pws_character_sprite_template_run_2.png")
-        self.walking_frame_startup_right = pg.transform.scale(self.walking_frame_startup_right,(player_width,player_height))
-        self.walking_frames_right = [pg.image.load("\Profielwerkstuk\Character Sprite Templates\Sprite Templates PNG\pws_character_sprite_template_run_3.png"),
-                                     pg.image.load("\Profielwerkstuk\Character Sprite Templates\Sprite Templates PNG\pws_character_sprite_template_run_4.png"),
-                                     pg.image.load("\Profielwerkstuk\Character Sprite Templates\Sprite Templates PNG\pws_character_sprite_template_run_5.png"),
-                                     pg.image.load("\Profielwerkstuk\Character Sprite Templates\Sprite Templates PNG\pws_character_sprite_template_run_6.png"),
-                                     pg.image.load("\Profielwerkstuk\Character Sprite Templates\Sprite Templates PNG\pws_character_sprite_template_run_7.png"),
-                                     pg.image.load("\Profielwerkstuk\Character Sprite Templates\Sprite Templates PNG\pws_character_sprite_template_run_8.png"),
-                                     pg.image.load("\Profielwerkstuk\Character Sprite Templates\Sprite Templates PNG\pws_character_sprite_template_run_9.png"),
-                                     pg.image.load("\Profielwerkstuk\Character Sprite Templates\Sprite Templates PNG\pws_character_sprite_template_run_10.png"),
-                                     pg.image.load("\Profielwerkstuk\Character Sprite Templates\Sprite Templates PNG\pws_character_sprite_template_run_11.png"),
-                                     pg.image.load("\Profielwerkstuk\Character Sprite Templates\Sprite Templates PNG\pws_character_sprite_template_run_12.png")]
+        self.standing_frame_right = pygame.image.load("\Profielwerkstuk\Character Sprite Templates\pws_character_sprite_template_rest.png")
+        self.standing_frame_right = pygame.transform.scale(self.standing_frame_right,(player_width,player_height))
+        self.walking_frame_startup_right = pygame.image.load("\Profielwerkstuk\Character Sprite Templates\pws_character_sprite_template_run_2.png")
+        self.walking_frame_startup_right = pygame.transform.scale(self.walking_frame_startup_right,(player_width,player_height))
+        self.walking_frames_right = [pygame.image.load("\Profielwerkstuk\Character Sprite Templates\pws_character_sprite_template_run_3.png"),
+                                     pygame.image.load("\Profielwerkstuk\Character Sprite Templates\pws_character_sprite_template_run_4.png"),
+                                     pygame.image.load("\Profielwerkstuk\Character Sprite Templates\pws_character_sprite_template_run_5.png"),
+                                     pygame.image.load("\Profielwerkstuk\Character Sprite Templates\pws_character_sprite_template_run_6.png"),
+                                     pygame.image.load("\Profielwerkstuk\Character Sprite Templates\pws_character_sprite_template_run_7.png"),
+                                     pygame.image.load("\Profielwerkstuk\Character Sprite Templates\pws_character_sprite_template_run_8.png"),
+                                     pygame.image.load("\Profielwerkstuk\Character Sprite Templates\pws_character_sprite_template_run_9.png"),
+                                     pygame.image.load("\Profielwerkstuk\Character Sprite Templates\pws_character_sprite_template_run_10.png"),
+                                     pygame.image.load("\Profielwerkstuk\Character Sprite Templates\pws_character_sprite_template_run_11.png"),
+                                     pygame.image.load("\Profielwerkstuk\Character Sprite Templates\pws_character_sprite_template_run_12.png")]
         for i in range (0, len(self.walking_frames_right)):
-            self.walking_frames_right[i] = pg.transform.scale(self.walking_frames_right[i],(player_width,player_height))
-        self.standing_frame_left = pg.transform.flip(self.standing_frame_right, True, False)
-        self.walking_frame_startup_left = pg.transform.flip(self.walking_frame_startup_right, True, False)
+            self.walking_frames_right[i] = pygame.transform.scale(self.walking_frames_right[i],(player_width,player_height))
+        self.standing_frame_left = pygame.transform.flip(self.standing_frame_right, True, False)
+        self.walking_frame_startup_left = pygame.transform.flip(self.walking_frame_startup_right, True, False)
         self.walking_frames_left = []
         for frame in self.walking_frames_right:
-            self.walking_frames_left.append(pg.transform.flip(frame, True, False))
+            self.walking_frames_left.append(pygame.transform.flip(frame, True, False))
         
     def update(self):
-        self.acc = vec(0,0)
-        keys = pg.key.get_pressed()
-        if keys[pg.K_LEFT]:
+        self.acc = vec(0,0.5)
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT]:
             self.acc.x = -player_acc
-        elif keys[pg.K_RIGHT]:
+        elif keys[pygame.K_RIGHT]:
             self.acc.x = player_acc
 
         #apply friction
@@ -80,10 +79,10 @@ class player(pg.sprite.Sprite):
         if self.pos.x < -self.rect.width/2:
             self.pos.x = display_width + self.rect.width/2
         
-        self.rect.center = self.pos
+        self.rect.midbottom = self.pos
 
     def animate(self):
-        now = pg.time.get_ticks()
+        now = pygame.time.get_ticks()
         if self.vel.x != 0:
             self.walking = True
         else:
@@ -114,13 +113,38 @@ class player(pg.sprite.Sprite):
             else:
                 self.image = self.standing_frame_left
 
-class Platform(pg.sprite.Sprite):
-    def __init__(self, x, y, w, h):
-        pg.sprite.Sprite.__init__(self)
-        self.image = pg.Surface((w, h))
+class Platform(pygame.sprite.Sprite):
+    def __init__(self, x, y, w):
+        pygame.sprite.Sprite.__init__(self)
+        self.load_images()
+        self.form(x, w)
+        self.image = self.platform_total
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+
+    def load_images(self):
+        self.platform_mid_big = pygame.image.load(r"\Profielwerkstuk\Objects\Pws Platform Middle Big.jpg")
+        self.platform_mid_small = pygame.image.load(r"\Profielwerkstuk\Objects\Pws Platform Middle Small.jpg")
+        self.platform_edge_left = pygame.image.load(r"\Profielwerkstuk\Objects\Pws Platform Edge Left.jpg")
+        self.platform_edge_right = pygame.image.load(r"\Profielwerkstuk\Objects\Pws Platform Edge Right.jpg")
+
+    def form(self, x, w):  #width in number of platforms, .5 for small platform 
+        self.w_big = int(w)  #removes the .5 (if present)
+        self.w_small = 0
+        if self.w_big != w:
+            self.w_small = 1
+        self.im_x = x
+        self.platform_total = self.platform_edge_left
+        self.im_x += 80
+        for i in range(0, self.w_big):
+            self.platform_total.paste(self.platform_mid_big, (self.im_x,y))
+            self.im_x += 160
+        if self.w_small:
+            self.platform_total.paste(self.platform_mid_small, (self.im_x,y))
+            self.im_x += 80
+        self.platform_total.paste(self.platform_edge_right, (self.im_x,y))
+
 
 
 class Game:
@@ -128,11 +152,13 @@ class Game:
         self.running = True
 
     def new(self):
-        self.all_sprites = pg.sprite.Group()
-        self.platforms = pg.sprite.Group()
+        self.all_sprites = pygame.sprite.Group()
+        self.platforms = pygame.sprite.Group()
         self.player = player()
         self.all_sprites.add(self.player)
-        self.platform = Platform(100, 500, display_width, 30)
+        self.platform = Platform(50, 500, display_width-150)
+        self.all_sprites.add(self.platform)
+        self.platforms.add(self.platform)
 
     def run(self):
         self.playing = True
@@ -146,15 +172,19 @@ class Game:
             self.player.animate()
         
 
-            pg.display.update()
+            pygame.display.update()
             clock.tick(FPS)
 
     def update(self):
         self.all_sprites.update()
+        hits = pygame.sprite.spritecollide(self.player, self.platforms, False)
+        if hits:
+            self.player.pos.y = hits[0].rect.top + 1
+            self.player.vel.y = 0
 
     def events(self):
-        for event in pg.event.get():
-            if event.type == pg.QUIT:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
                 self.playing = False
                 self.running = False
 
@@ -178,5 +208,5 @@ while Game.running:
     Game.run()
     Game.show_go_screen()
     
-pg.quit()
+pygame.quit()
 quit()
