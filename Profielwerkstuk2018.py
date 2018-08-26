@@ -1,4 +1,4 @@
-import pygame, glob
+import pygame, glob, sys
 vec = pygame.math.Vector2
 
 pygame.init()
@@ -10,6 +10,9 @@ player_height = 140
 FPS = 60
 player_acc = 0.5
 player_friction = -0.12
+platform_number = 0
+platform_parts_total = 0
+platformImages = {}
 
 screen = pygame.display.set_mode((display_width, display_height))
 pygame.display.set_caption('Profielwerkstuk2018')
@@ -113,38 +116,59 @@ class player(pygame.sprite.Sprite):
             else:
                 self.image = self.standing_frame_left
 
+
+
+def formPlatform(x, y, w): #w is amount of parts, .5 for small part
+    w_big = int(w)  #removes the .5 (if present)
+    w_small = 0
+    if w_big != w:
+        w_small = 1
+    im_x = x
+
+    platform_name = "Platform_"
+    global platform_number
+    global platform_parts_total
+    platform_number += 1
+    platform_name += str(platform_number)
+        
+    platform_parts = 1
+    platform_parts_total += 1
+    globals()[platform_name+"_"+str(platform_parts)] = Platform(im_x,y, "edge_left")
+    im_x += 80 #lenght small
+        
+    for i in range(0, w_big):
+        platform_parts += 1
+        platform_parts_total += 1
+        globals()[platform_name+"_"+str(platform_parts)] = Platform(im_x,y, "mid_big")
+        im_x += 160 #lenght big
+    if w_small:
+        platform_part += 1
+        platform_parts_total += 1
+        globals()[platform_name+"_"+str(platform_parts)] = Platform(im_x,y, "mid_small")
+        im_x += 80 
+    platform_parts += 1
+    platform_parts_total += 1
+    globals()[platform_name+"_"+str(platform_parts)] = Platform(x,y, "edge_right")
+
 class Platform(pygame.sprite.Sprite):
-    def __init__(self, x, y, w):
+    def __init__(self, x, y, part):
         pygame.sprite.Sprite.__init__(self)
         self.load_images()
-        self.form(x, w)
-        self.image = self.platform_total
+        self.image = platformImages["self.platform_"+part]  #for example: part = "mid_big"  self.image = self.platform_mid_big
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
 
     def load_images(self):
-        self.platform_mid_big = pygame.image.load(r"\Profielwerkstuk\Objects\Pws Platform Middle Big.jpg")
-        self.platform_mid_small = pygame.image.load(r"\Profielwerkstuk\Objects\Pws Platform Middle Small.jpg")
-        self.platform_edge_left = pygame.image.load(r"\Profielwerkstuk\Objects\Pws Platform Edge Left.jpg")
-        self.platform_edge_right = pygame.image.load(r"\Profielwerkstuk\Objects\Pws Platform Edge Right.jpg")
+        #put in platformImages dict so it can be used dynamically at self.image
+        global platformImages
+        platformImages['self.platform_mid_big'] = pygame.image.load(r"\Profielwerkstuk\Objects\Pws Platform Middle Big.jpg")
+        platformImages['self.platform_mid_small'] = pygame.image.load(r"\Profielwerkstuk\Objects\Pws Platform Middle Small.jpg")
+        platformImages['self.platform_edge_left'] = pygame.image.load(r"\Profielwerkstuk\Objects\Pws Platform Edge Left.jpg")
+        platformImages['self.platform_edge_right'] = pygame.image.load(r"\Profielwerkstuk\Objects\Pws Platform Edge Right.jpg")
 
-    def form(self, x, w):  #width in number of platforms, .5 for small platform 
-        self.w_big = int(w)  #removes the .5 (if present)
-        self.w_small = 0
-        if self.w_big != w:
-            self.w_small = 1
-        self.im_x = x
-        self.platform_total = self.platform_edge_left
-        self.im_x += 80
-        for i in range(0, self.w_big):
-            self.platform_total.paste(self.platform_mid_big, (self.im_x,y))
-            self.im_x += 160
-        if self.w_small:
-            self.platform_total.paste(self.platform_mid_small, (self.im_x,y))
-            self.im_x += 80
-        self.platform_total.paste(self.platform_edge_right, (self.im_x,y))
 
+    
 
 
 class Game:
@@ -156,9 +180,15 @@ class Game:
         self.platforms = pygame.sprite.Group()
         self.player = player()
         self.all_sprites.add(self.player)
-        self.platform = Platform(50, 500, display_width-150)
-        self.all_sprites.add(self.platform)
-        self.platforms.add(self.platform)
+        formPlatform(50, 500, 3)
+        for platform in range(1, platform_number+1):
+            try:
+                for platformPart in range(1, platform_parts_total+platform_number+1):
+                    self.all_sprites.add(globals()["Platform_"+str(platform)+"_"+str(platformPart)])
+                    self.platforms.add(globals()["Platform_"+str(platform)+"_"+str(platformPart)])
+            except KeyError:
+                break           #if Platform_1_x doesnt exist, go to Platform_2_1
+            
 
     def run(self):
         self.playing = True
