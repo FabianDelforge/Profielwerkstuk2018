@@ -3,16 +3,33 @@ vec = pygame.math.Vector2
 
 pygame.init()
 
+############
+##SETTINGS##
+############
+
+#Visual
 display_width = 800
 display_height = 600
+FPS = 60
+col_white = (255,255,255)
+col_black = (0,0,0)
+col_red = (255,0,0)
+col_green = (0,255,0)
+col_blue = (0,0,255)
+#Player
 player_width = 100
 player_height = 140
-FPS = 60
 player_acc = 0.5
 player_friction = -0.12
+player_grav = 0.2
+#Platform
 platform_number = 0
 platform_parts_total = 0
 platformImages = {}
+
+############
+##SETTINGS##
+############
 
 screen = pygame.display.set_mode((display_width, display_height))
 pygame.display.set_caption('Profielwerkstuk2018')
@@ -20,7 +37,7 @@ pygame.display.set_caption('Profielwerkstuk2018')
 clock = pygame.time.Clock()
 
 class player(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self,game):
         pygame.sprite.Sprite.__init__(self)
         self.walking = False
         self.jumping = False
@@ -35,23 +52,23 @@ class player(pygame.sprite.Sprite):
         self.acc = vec(0,0)
         self.goingRight = 1      #if facing right: 1       if facing left: 0
         self.walking_startup = 1 #if starting to walk: 1   if already walking: no need to show _run_2, so 0
-
+        self.game = game
             
     def load_images(self):
-        self.standing_frame_right = pygame.image.load("\Profielwerkstuk\Character Sprite Templates\pws_character_sprite_template_rest.png")
+        self.standing_frame_right = pygame.image.load("C:/Users/Gebruiker/Downloads/Profielwerkstuk/Character Sprite Templates/pws_character_sprite_template_rest.png")
         self.standing_frame_right = pygame.transform.scale(self.standing_frame_right,(player_width,player_height))
-        self.walking_frame_startup_right = pygame.image.load("\Profielwerkstuk\Character Sprite Templates\pws_character_sprite_template_run_2.png")
+        self.walking_frame_startup_right = pygame.image.load("C:/Users/Gebruiker/Downloads/Profielwerkstuk/Character Sprite Templates/pws_character_sprite_template_run_2.png")
         self.walking_frame_startup_right = pygame.transform.scale(self.walking_frame_startup_right,(player_width,player_height))
-        self.walking_frames_right = [pygame.image.load("\Profielwerkstuk\Character Sprite Templates\pws_character_sprite_template_run_3.png"),
-                                     pygame.image.load("\Profielwerkstuk\Character Sprite Templates\pws_character_sprite_template_run_4.png"),
-                                     pygame.image.load("\Profielwerkstuk\Character Sprite Templates\pws_character_sprite_template_run_5.png"),
-                                     pygame.image.load("\Profielwerkstuk\Character Sprite Templates\pws_character_sprite_template_run_6.png"),
-                                     pygame.image.load("\Profielwerkstuk\Character Sprite Templates\pws_character_sprite_template_run_7.png"),
-                                     pygame.image.load("\Profielwerkstuk\Character Sprite Templates\pws_character_sprite_template_run_8.png"),
-                                     pygame.image.load("\Profielwerkstuk\Character Sprite Templates\pws_character_sprite_template_run_9.png"),
-                                     pygame.image.load("\Profielwerkstuk\Character Sprite Templates\pws_character_sprite_template_run_10.png"),
-                                     pygame.image.load("\Profielwerkstuk\Character Sprite Templates\pws_character_sprite_template_run_11.png"),
-                                     pygame.image.load("\Profielwerkstuk\Character Sprite Templates\pws_character_sprite_template_run_12.png")]
+        self.walking_frames_right = [pygame.image.load("C:/Users/Gebruiker/Downloads/Profielwerkstuk/Character Sprite Templates/pws_character_sprite_template_run_3.png"),
+                                     pygame.image.load("C:/Users/Gebruiker/Downloads/Profielwerkstuk/Character Sprite Templates/pws_character_sprite_template_run_4.png"),
+                                     pygame.image.load("C:/Users/Gebruiker/Downloads/Profielwerkstuk/Character Sprite Templates/pws_character_sprite_template_run_5.png"),
+                                     pygame.image.load("C:/Users/Gebruiker/Downloads/Profielwerkstuk/Character Sprite Templates/pws_character_sprite_template_run_6.png"),
+                                     pygame.image.load("C:/Users/Gebruiker/Downloads/Profielwerkstuk/Character Sprite Templates/pws_character_sprite_template_run_7.png"),
+                                     pygame.image.load("C:/Users/Gebruiker/Downloads/Profielwerkstuk/Character Sprite Templates/pws_character_sprite_template_run_8.png"),
+                                     pygame.image.load("C:/Users/Gebruiker/Downloads/Profielwerkstuk/Character Sprite Templates/pws_character_sprite_template_run_9.png"),
+                                     pygame.image.load("C:/Users/Gebruiker/Downloads/Profielwerkstuk/Character Sprite Templates/pws_character_sprite_template_run_10.png"),
+                                     pygame.image.load("C:/Users/Gebruiker/Downloads/Profielwerkstuk/Character Sprite Templates/pws_character_sprite_template_run_11.png"),
+                                     pygame.image.load("C:/Users/Gebruiker/Downloads/Profielwerkstuk/Character Sprite Templates/pws_character_sprite_template_run_12.png")]
         for i in range (0, len(self.walking_frames_right)):
             self.walking_frames_right[i] = pygame.transform.scale(self.walking_frames_right[i],(player_width,player_height))
         self.standing_frame_left = pygame.transform.flip(self.standing_frame_right, True, False)
@@ -61,13 +78,15 @@ class player(pygame.sprite.Sprite):
             self.walking_frames_left.append(pygame.transform.flip(frame, True, False))
         
     def update(self):
-        self.acc = vec(0,0.5)
+        self.acc = vec(0,player_grav)
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
             self.acc.x = -player_acc
         elif keys[pygame.K_RIGHT]:
             self.acc.x = player_acc
-
+        if keys[pygame.K_SPACE]:
+            self.jump()
+            
         #apply friction
         self.acc.x += self.vel.x * player_friction
         #motion
@@ -83,6 +102,14 @@ class player(pygame.sprite.Sprite):
             self.pos.x = display_width + self.rect.width/2
         
         self.rect.midbottom = self.pos
+        
+    def jump(self):
+        #checks if standing on platform
+        self.rect.x += 1
+        hits_test = pygame.sprite.spritecollide(self, self.game.platforms, False)
+        self.rect.x -= 1
+        if hits_test:
+            self.vel.y = -8
 
     def animate(self):
         now = pygame.time.get_ticks()
@@ -162,13 +189,13 @@ class Platform(pygame.sprite.Sprite):
     def load_images(self):
         #put in platformImages dict so it can be used dynamically at self.image
         global platformImages
-        platformImages['self.platform_mid_big'] = pygame.image.load(r"\Profielwerkstuk\Objects\Pws Platform Middle Big.jpg")
-        platformImages['self.platform_mid_small'] = pygame.image.load(r"\Profielwerkstuk\Objects\Pws Platform Middle Small.jpg")
-        platformImages['self.platform_edge_left'] = pygame.image.load(r"\Profielwerkstuk\Objects\Pws Platform Edge Left.jpg")
-        platformImages['self.platform_edge_right'] = pygame.image.load(r"\Profielwerkstuk\Objects\Pws Platform Edge Right.jpg")
+        platformImages['self.platform_mid_big'] = pygame.image.load(r"C:/Users/Gebruiker/Downloads/Profielwerkstuk/Objects/Pws Platform Middle Big.jpg")
+        platformImages['self.platform_mid_small'] = pygame.image.load(r"C:/Users/Gebruiker/Downloads/Profielwerkstuk/Objects/Pws Platform Middle Small.jpg")
+        platformImages['self.platform_edge_left'] = pygame.image.load(r"C:/Users/Gebruiker/Downloads/Profielwerkstuk/Objects/Pws Platform Edge Left.jpg")
+        platformImages['self.platform_edge_right'] = pygame.image.load(r"C:/Users/Gebruiker/Downloads/Profielwerkstuk/Objects/Pws Platform Edge Right.jpg")
 
 
-    
+
 
 
 class Game:
@@ -178,7 +205,7 @@ class Game:
     def new(self):
         self.all_sprites = pygame.sprite.Group()
         self.platforms = pygame.sprite.Group()
-        self.player = player()
+        self.player = player(self)
         self.all_sprites.add(self.player)
         formPlatform(50, 500, 3)
         for platform in range(1, platform_number+1):
