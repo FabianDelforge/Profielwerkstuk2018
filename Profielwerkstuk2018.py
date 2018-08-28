@@ -1,5 +1,6 @@
 import pygame, glob, sys
 vec = pygame.math.Vector2
+clock = pygame.time.Clock()
 
 pygame.init()
 
@@ -8,6 +9,7 @@ pygame.init()
 ############
 
 #Visual
+pygame.display.set_caption('Profielwerkstuk2018')
 display_width = 800
 display_height = 600
 FPS = 60
@@ -32,9 +34,6 @@ platformImages = {}
 ############
 
 screen = pygame.display.set_mode((display_width, display_height))
-pygame.display.set_caption('Profielwerkstuk2018')
-
-clock = pygame.time.Clock()
 
 class player(pygame.sprite.Sprite):
     def __init__(self,game):
@@ -76,40 +75,6 @@ class player(pygame.sprite.Sprite):
         self.walking_frames_left = []
         for frame in self.walking_frames_right:
             self.walking_frames_left.append(pygame.transform.flip(frame, True, False))
-        
-    def update(self):
-        self.acc = vec(0,player_grav)
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT]:
-            self.acc.x = -player_acc
-        elif keys[pygame.K_RIGHT]:
-            self.acc.x = player_acc
-        if keys[pygame.K_SPACE]:
-            self.jump()
-            
-        #apply friction
-        self.acc.x += self.vel.x * player_friction
-        #motion
-        self.vel += self.acc
-        if abs(self.vel.x) < 0.1:
-            self.vel.x = 0
-        self.pos += self.vel + 0.5*self.acc
-
-        #dont run off the screen
-        if self.pos.x > display_width + self.rect.width/2:
-            self.pos.x = -self.rect.width/2
-        if self.pos.x < -self.rect.width/2:
-            self.pos.x = display_width + self.rect.width/2
-        
-        self.rect.midbottom = self.pos
-        
-    def jump(self):
-        #checks if standing on platform
-        self.rect.x += 1
-        hits_test = pygame.sprite.spritecollide(self, self.game.platforms, False)
-        self.rect.x -= 1
-        if hits_test:
-            self.vel.y = -8
 
     def animate(self):
         now = pygame.time.get_ticks()
@@ -143,6 +108,41 @@ class player(pygame.sprite.Sprite):
             else:
                 self.image = self.standing_frame_left
 
+        
+    def update(self):
+        self.acc = vec(0,player_grav)
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT]:
+            self.acc.x = -player_acc
+        elif keys[pygame.K_RIGHT]:
+            self.acc.x = player_acc
+        if keys[pygame.K_SPACE]:
+            self.jump()
+            
+        #apply friction
+        self.acc.x += self.vel.x * player_friction
+        #motion
+        self.vel += self.acc
+        if abs(self.vel.x) < 0.1:
+            self.vel.x = 0
+        self.pos += self.vel + 0.5*self.acc
+
+        #dont run off the screen
+        if self.pos.x > display_width + self.rect.width/2:
+            self.pos.x = -self.rect.width/2
+        if self.pos.x < -self.rect.width/2:
+            self.pos.x = display_width + self.rect.width/2
+        
+        self.rect.midbottom = self.pos
+        
+    def jump(self):
+        #checks if standing on platform
+        self.rect.x += 1
+        hits = pygame.sprite.spritecollide(self, self.game.platforms, False)
+        self.rect.x -= 1
+        if hits:
+            self.vel.y = -8
+
 
 
 def formPlatform(x, y, w): #w is amount of parts, .5 for small part
@@ -175,7 +175,7 @@ def formPlatform(x, y, w): #w is amount of parts, .5 for small part
         im_x += 80 
     platform_parts += 1
     platform_parts_total += 1
-    globals()[platform_name+"_"+str(platform_parts)] = Platform(x,y, "edge_right")
+    globals()[platform_name+"_"+str(platform_parts)] = Platform(im_x,y, "edge_right")
 
 class Platform(pygame.sprite.Sprite):
     def __init__(self, x, y, part):
