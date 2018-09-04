@@ -134,7 +134,15 @@ class player(pygame.sprite.Sprite):
             self.pos.x = display_width + self.rect.width/2
         
         self.rect.midbottom = self.pos
-        
+
+        #beweegt scherm naar rechts als speler dicht bij de rechterkant is
+        global move_screen
+        move_screen = False
+        if self.pos.x <= display_width*0.5:
+            self.pos.x -= self.vel.x
+            move_screen = True
+
+
     def jump(self):
         #checks if standing on platform
         self.rect.x += 1
@@ -238,6 +246,10 @@ class Game:
         if hits:
             self.player.pos.y = hits[0].rect.top + 1
             self.player.vel.y = 0
+        if move_screen == True:
+            for plat in self.platforms:
+                plat.rect.x -= self.player.vel.x
+            move_screen == False
 
     def events(self):
         for event in pygame.event.get():
