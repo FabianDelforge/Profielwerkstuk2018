@@ -138,7 +138,7 @@ class player(pygame.sprite.Sprite):
         #beweegt scherm naar rechts als speler dicht bij de rechterkant is
         global move_screen
         move_screen = False
-        if self.pos.x <= display_width*0.5:
+        if self.pos.x >= display_width*0.7:
             self.pos.x -= self.vel.x
             move_screen = True
 
@@ -155,9 +155,9 @@ class player(pygame.sprite.Sprite):
 
 def formPlatform(x, y, w): #w is amount of parts, .5 for small part
     w_big = int(w)  #removes the .5 (if present)
-    w_small = 0
+    w_small = False
     if w_big != w:
-        w_small = 1
+        w_small = True
     im_x = x
 
     platform_name = "Platform_"
@@ -165,7 +165,7 @@ def formPlatform(x, y, w): #w is amount of parts, .5 for small part
     global platform_parts_total
     platform_number += 1
     platform_name += str(platform_number)
-        
+
     platform_parts = 1
     platform_parts_total += 1
     globals()[platform_name+"_"+str(platform_parts)] = Platform(im_x,y, "edge_left")
@@ -177,7 +177,7 @@ def formPlatform(x, y, w): #w is amount of parts, .5 for small part
         globals()[platform_name+"_"+str(platform_parts)] = Platform(im_x,y, "mid_big")
         im_x += 160 #lenght big
     if w_small:
-        platform_part += 1
+        platform_parts += 1
         platform_parts_total += 1
         globals()[platform_name+"_"+str(platform_parts)] = Platform(im_x,y, "mid_small")
         im_x += 80 
@@ -215,7 +215,7 @@ class Game:
         self.platforms = pygame.sprite.Group()
         self.player = player(self)
         self.all_sprites.add(self.player)
-        formPlatform(50, 500, 3)
+        formPlatform(50, 500, 3.5)
         for platform in range(1, platform_number+1):
             try:
                 for platformPart in range(1, platform_parts_total+platform_number+1):
@@ -249,6 +249,8 @@ class Game:
         if move_screen == True:
             for plat in self.platforms:
                 plat.rect.x -= self.player.vel.x
+                if plat.rect.right <= 0:
+                    plat.kill()
             move_screen == False
 
     def events(self):
