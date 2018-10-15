@@ -108,7 +108,6 @@ class player(pygame.sprite.Sprite):
             else:
                 self.image = self.standing_frame_left
 
-        
     def update(self):
         self.acc = vec(0,player_grav)
         keys = pygame.key.get_pressed()
@@ -121,6 +120,7 @@ class player(pygame.sprite.Sprite):
             
         #apply friction
         self.acc.x += self.vel.x * player_friction
+        
         #motion
         self.vel += self.acc
         if abs(self.vel.x) < 0.1:
@@ -134,14 +134,6 @@ class player(pygame.sprite.Sprite):
             self.pos.x = display_width + self.rect.width/2
         
         self.rect.midbottom = self.pos
-
-        #beweegt scherm naar rechts als speler dicht bij de rechterkant is
-        global move_screen
-        move_screen = False
-        if self.pos.x >= display_width*0.7:
-            self.pos.x -= self.vel.x
-            move_screen = True
-
 
     def jump(self):
         #checks if standing on platform
@@ -184,6 +176,7 @@ def formPlatform(x, y, w): #w is amount of parts, .5 for small part
     platform_parts += 1
     platform_parts_total += 1
     globals()[platform_name+"_"+str(platform_parts)] = Platform(im_x,y, "edge_right")
+    
 
 class Platform(pygame.sprite.Sprite):
     def __init__(self, x, y, part):
@@ -216,6 +209,7 @@ class Game:
         self.player = player(self)
         self.all_sprites.add(self.player)
         formPlatform(50, 500, 3.5)
+        formPlatform(50, 200, 3.5)
         for platform in range(1, platform_number+1):
             try:
                 for platformPart in range(1, platform_parts_total+platform_number+1):
@@ -223,7 +217,6 @@ class Game:
                     self.platforms.add(globals()["Platform_"+str(platform)+"_"+str(platformPart)])
             except KeyError:
                 break           #if Platform_1_x doesnt exist, go to Platform_2_1
-            
 
     def run(self):
         self.playing = True
@@ -242,16 +235,20 @@ class Game:
 
     def update(self):
         self.all_sprites.update()
+        
         hits = pygame.sprite.spritecollide(self.player, self.platforms, False)
         if hits:
             self.player.pos.y = hits[0].rect.top + 1
             self.player.vel.y = 0
+        
+        move_screen = False
+        if self.player.pos.x >= display_width*0.7 or self.player.pos.x <= display_width*0.3:
+            self.player.pos.x -= self.player.vel.x
+            move_screen = True
         if move_screen == True:
             for plat in self.platforms:
                 plat.rect.x -= self.player.vel.x
-                if plat.rect.right <= 0:
-                    plat.kill()
-            move_screen == False
+            move_screen = False
 
     def events(self):
         for event in pygame.event.get():
