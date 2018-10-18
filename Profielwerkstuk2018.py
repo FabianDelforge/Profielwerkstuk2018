@@ -26,7 +26,6 @@ player_friction = -0.12
 player_grav = 0.2
 #Platform
 platform_number = 0
-platform_parts_total = 0
 platformImages = {}
 
 ############
@@ -154,29 +153,27 @@ def formPlatform(x, y, w): #w is amount of parts, .5 for small part
 
     platform_name = "Platform_"
     global platform_number
-    global platform_parts_total
+    global platform_parts
     platform_number += 1
     platform_name += str(platform_number)
 
     platform_parts = 1
-    platform_parts_total += 1
     globals()[platform_name+"_"+str(platform_parts)] = Platform(im_x,y, "edge_left")
     im_x += 80 #lenght small
         
     for i in range(0, w_big):
         platform_parts += 1
-        platform_parts_total += 1
         globals()[platform_name+"_"+str(platform_parts)] = Platform(im_x,y, "mid_big")
         im_x += 160 #lenght big
     if w_small:
         platform_parts += 1
-        platform_parts_total += 1
         globals()[platform_name+"_"+str(platform_parts)] = Platform(im_x,y, "mid_small")
         im_x += 80 
     platform_parts += 1
-    platform_parts_total += 1
     globals()[platform_name+"_"+str(platform_parts)] = Platform(im_x,y, "edge_right")
+
     
+
 
 class Platform(pygame.sprite.Sprite):
     def __init__(self, x, y, part):
@@ -209,15 +206,13 @@ class Game:
         self.player = player(self)
         self.all_sprites.add(self.player)
         formPlatform(50, 500, 3.5)
+        for platformPart in range(1, platform_parts+1):
+            self.all_sprites.add(globals()["Platform_"+str(platform_number)+"_"+str(platformPart)])
+            self.platforms.add(globals()["Platform_"+str(platform_number)+"_"+str(platformPart)]) 
         formPlatform(50, 200, 3.5)
-        for platform in range(1, platform_number+1):
-            try:
-                for platformPart in range(1, platform_parts_total+platform_number+1):
-                    self.all_sprites.add(globals()["Platform_"+str(platform)+"_"+str(platformPart)])
-                    self.platforms.add(globals()["Platform_"+str(platform)+"_"+str(platformPart)])
-            except KeyError:
-                break           #if Platform_1_x doesnt exist, go to Platform_2_1
-
+        for platformPart in range(1, platform_parts+1):
+            self.all_sprites.add(globals()["Platform_"+str(platform_number)+"_"+str(platformPart)])
+            self.platforms.add(globals()["Platform_"+str(platform_number)+"_"+str(platformPart)])
     def run(self):
         self.playing = True
         while self.playing:
