@@ -16,7 +16,7 @@ def main():
     up = down = left = right = running = False
     bg = Surface((32,32))
     bg.convert()
-    bg.fill(Color("#000000"))
+    bg.fill(Color("#040024"))
     
     entities = pygame.sprite.Group()
     platforms = []
@@ -31,17 +31,17 @@ def main():
         "A                       A",
         "A                       A",
         "A                       A",
-        "A     ZZ       BB       A",
-        "A     ZZZZZZ   BB       A",
-        "A   ZZZZZZZZZ           A",
-        "A      B                A",
-        "A      A                A",
-        "A    BABAB              A",
-        "A      A                A",
-        "A      B                A",
-        "A                       A",
-        "A               BAAB    A",
-        "A                       A",
+        "A      X       BB       A",
+        "A      Y       BB       A",
+        "A      Z        X       A",
+        "A      B        Y       A",
+        "A      A        Y       A",
+        "A    BABAB      Y       A",
+        "A      A        Y       A",
+        "A      B        Y       A",
+        "A      X        Z       A",
+        "A      Y        BAAB    A",
+        "A      Z                A",
         "AAAAAAAAAAAAAAAAAAAAAAAAA",]
     # build the level
     for row in level:
@@ -58,6 +58,12 @@ def main():
                 entities.add(b)
             if col == "Z":
                 z = Background(x, y, "1")
+                entities.add(z)
+            if col == "Y":
+                z = Background(x, y, "2")
+                entities.add(z)
+            if col == "X":
+                z = Background(x, y, "3")
                 entities.add(z)
             x += 32
         y += 32
@@ -182,6 +188,8 @@ class Background(Entity):
     def load_images(self):
         global BGImages
         BGImages['BG_1'] = pygame.image.load(r"C:/Users/Gebruiker/Downloads/Profielwerkstuk/Objects/achtergrond1.png")
+        BGImages['BG_2'] = pygame.image.load(r"C:/Users/Gebruiker/Downloads/Profielwerkstuk/Objects/achtergrond2.png")
+        BGImages['BG_3'] = pygame.image.load(r"C:/Users/Gebruiker/Downloads/Profielwerkstuk/Objects/achtergrond3.png")
 
 class ExitBlock(Platform):
     def __init__(self, x, y):
