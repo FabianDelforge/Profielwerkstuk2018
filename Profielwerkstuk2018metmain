@@ -14,8 +14,8 @@ def main():
     timer = pygame.time.Clock()
 
     up = down = left = right = running = False
-    bg = Surface((32,32))
-    bg.convert()
+    
+    bg = Surface((display_width, display_height)).convert()
     bg.fill(Color("#040024"))
     
     entities = pygame.sprite.Group()
@@ -23,27 +23,29 @@ def main():
 
     x = y = 0
     level = [
-        "AAAAAAAAAAAAAAAAAAAAAAAAA",
-        "A                       A",
-        "A                       A",
-        "A              P        A",
-        "A                       A",
-        "A                       A",
-        "A                       A",
-        "A                       A",
-        "A      X       BB       A",
-        "A      Y       BB       A",
-        "A      Z        X       A",
-        "A      B        Y       A",
-        "A      A        Y       A",
-        "A    BABAB      Y       A",
-        "A      A        Y       A",
-        "A      B        Y       A",
-        "A      X        Z       A",
-        "A      Y        BAAB    A",
-        "A      Z                A",
-        "AAAAAAAAAAAAAAAAAAAAAAAAA",]
-    # build the level
+        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "A                           A",
+        "A                           A",
+        "A              P            A",
+        "A                          AA",
+        "A                           A",
+        "A                           A",
+        "A                          AA",
+        "A      X       BB           A",
+        "A      Y       BB           A",
+        "A      Z        X          AA",
+        "A      B        Y           A",
+        "A      A        Y           A",
+        "A    BABAB      Y           A",
+        "A      A    B   Y           A",
+        "A      B        Y           A",
+        "A      X        Z           A",
+        "A      Y        BAAB        A",
+        "A      Y           X        A",
+        "A      Y           Y        A",
+        "A      Z           Z   AA   A",
+        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAA",]
+    #level bouwen
     for row in level:
         for col in row:
             if col == "P":
@@ -58,7 +60,7 @@ def main():
                 entities.add(b)
             if col == "Z":
                 z = Background(x, y, "1")
-                entities.add(z)
+                entities.add(z) #geen platforms.append omdat de speler er niet tegenaan moet botsen
             if col == "Y":
                 z = Background(x, y, "2")
                 entities.add(z)
@@ -69,6 +71,10 @@ def main():
         y += 32
         x = 0
 
+    total_level_width  = len(level[0])*32 #lengte level berekenen in pixels
+    total_level_height = len(level)*32  
+    camera = Camera(complex_camera, total_level_width, total_level_height)
+     
     entities.add(player)
 
     while 1:
@@ -94,16 +100,40 @@ def main():
             if e.type == KEYUP and e.key == K_LEFT:
                 left = False
 
-        # draw background
-        for y in range(32):
-            for x in range(32):
-                screen.blit(bg, (x * 32, y * 32))
+        #achtergrond vullen
+        screen.blit(bg, (0,0))
 
-        # update player, draw everything else
+        camera.update(player) #camera volgt de speler, kan overigens ook andere sprites volgen
+
+        #speler updaten, alle andere sprites op scherm tevoorschijn toveren
         player.update(up, down, left, right, running, platforms)
-        entities.draw(screen)
+        for e in entities:
+            screen.blit(e.image, camera.apply(e)) #alle entities bewegen met het scherm mee
 
         pygame.display.update()
+
+class Camera(object):
+    def __init__(self, camera_func, width, height):
+        self.camera_func = camera_func
+        self.state = Rect(0, 0, width, height)
+
+    def apply(self, target):
+        return target.rect.move(self.state.topleft)
+
+    def update(self, target):
+        self.state = self.camera_func(self.state, target.rect)
+
+def complex_camera(camera, target_rect):
+    #target_rect is in het centrum van het scherm
+    x = -target_rect.center[0] + display_width/2 
+    y = -target_rect.center[1] + display_height/2
+    #camera bewegen met behulp van vectors
+    camera.topleft += (pygame.math.Vector2((x, y)) - pygame.math.Vector2(camera.topleft)) * 0.06
+    #zorgen dat we niet buiten het level kunnen kijken
+    camera.x = max(-(camera.width-display_width), min(0, camera.x))
+    camera.y = max(-(camera.height-display_height), min(0, camera.y))
+
+    return camera
 
 class Entity(pygame.sprite.Sprite):
     def __init__(self):
@@ -122,41 +152,39 @@ class Player(Entity):
 
     def update(self, up, down, left, right, running, platforms):
         if up:
-            # only jump if on the ground
+            #je kan alleen springen als je op een platform staat
             if self.onGround: self.yvel -= 8
         if left:
             self.xvel = -8
         if right:
             self.xvel = 8
         if not self.onGround:
-            # only accelerate with gravity if in the air
+            #zwaartekracht als je niet op een platform staat
             self.yvel += 0.3
-            # max falling speed
+            #maximum valsnelheid
             if self.yvel > 100: self.yvel = 100
         if not(left or right):
             self.xvel = 0
-        # increment in x direction
+        #verandering x-richting
         self.rect.left += self.xvel
-        # do x-axis collisions
+        #kijken of er botsingen in de x-richting zijn
         self.collide(self.xvel, 0, platforms)
-        # increment in y direction
+        #verandering y-richting
         self.rect.top += self.yvel
-        # assuming we're in the air
+        #we nemen altijd eerst aan dat de speler in de lucht is
         self.onGround = False;
-        # do y-axis collisions
+        #kijken of er botsingen in de y-richting zijn
         self.collide(0, self.yvel, platforms)
 
     def collide(self, xvel, yvel, platforms):
         for p in platforms:
             if pygame.sprite.collide_rect(self, p):
                 if isinstance(p, ExitBlock):
-                    pygame.event.post(pygame.event.Event(QUIT))
+                    pygame.event.post(pygame.event.Event(QUIT)) #einde van level, nog niet toegevoegd
                 if xvel > 0:
                     self.rect.right = p.rect.left
-                    print ("collide right")
                 if xvel < 0:
                     self.rect.left = p.rect.right
-                    print ("collide left")
                 if yvel > 0:
                     self.rect.bottom = p.rect.top
                     self.onGround = True
@@ -175,8 +203,8 @@ class Platform(Entity):
 
     def load_images(self):
         global PlatformImages
-        PlatformImages['platform_1'] = pygame.image.load(r"C:/Users/Gebruiker/Downloads/Profielwerkstuk/Objects/blok1.png")
-        PlatformImages['platform_2'] = pygame.image.load(r"C:/Users/Gebruiker/Downloads/Profielwerkstuk/Objects/blok2.png")
+        PlatformImages['platform_1'] = pygame.image.load(r"C:/Users/Gebruiker/Downloads/Profielwerkstuk/Objects/blok1.png").convert() #verander r"C:/....png" naar waar blok1 staat opgeslagen op pc
+        PlatformImages['platform_2'] = pygame.image.load(r"C:/Users/Gebruiker/Downloads/Profielwerkstuk/Objects/blok2.png").convert()
 
 class Background(Entity):
     def __init__(self, x, y, number):
@@ -187,9 +215,9 @@ class Background(Entity):
 
     def load_images(self):
         global BGImages
-        BGImages['BG_1'] = pygame.image.load(r"C:/Users/Gebruiker/Downloads/Profielwerkstuk/Objects/achtergrond1.png")
-        BGImages['BG_2'] = pygame.image.load(r"C:/Users/Gebruiker/Downloads/Profielwerkstuk/Objects/achtergrond2.png")
-        BGImages['BG_3'] = pygame.image.load(r"C:/Users/Gebruiker/Downloads/Profielwerkstuk/Objects/achtergrond3.png")
+        BGImages['BG_1'] = pygame.image.load(r"C:/Users/Gebruiker/Downloads/Profielwerkstuk/Objects/achtergrond1.png").convert() #als transparente dingen niet werken probeer .convert_alpha()
+        BGImages['BG_2'] = pygame.image.load(r"C:/Users/Gebruiker/Downloads/Profielwerkstuk/Objects/achtergrond2.png").convert()
+        BGImages['BG_3'] = pygame.image.load(r"C:/Users/Gebruiker/Downloads/Profielwerkstuk/Objects/achtergrond3.png").convert()
 
 class ExitBlock(Platform):
     def __init__(self, x, y):
