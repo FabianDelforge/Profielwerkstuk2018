@@ -208,6 +208,7 @@ class Player(Entity):
                 self.image = self.standing_frame_right
             else:
                 self.image = self.standing_frame_left
+            self.rect = self.image.get_rect()
 
     def update(self, up, down, left, right, running, platforms):
         if up:
