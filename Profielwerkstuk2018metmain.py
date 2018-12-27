@@ -16,35 +16,33 @@ def main():
     up = down = left = right = running = False
     
     bg = Surface((display_width, display_height)).convert()
-    bg.fill(Color("#040024"))
+    bg.fill(Color("#ff2d03"))
     
     entities = pygame.sprite.Group()
     platforms = []
 
     x = y = 0
     level = [
-        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-        "A                           A",
-        "A                           A",
-        "A              P            A",
-        "A                          AA",
-        "A                           A",
-        "A                           A",
-        "A                          AA",
-        "A      X       BB           A",
-        "A      Y       BB           A",
-        "A      Z        X          AA",
-        "A      B        Y           A",
-        "A      A        Y           A",
-        "A    BABAB      Y           A",
-        "A      A    B   Y           A",
-        "A      B        Y           A",
-        "A      X        Z           A",
-        "A      Y        BAAB        A",
-        "A      Y           X        A",
-        "A      Y           Y        A",
-        "A      Z           Z   AA   A",
-        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAA",]
+        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "A                                                                                  A",
+        "A                                                                                  A",
+        "A                                                                                  A",
+        "A                                                                                  A",
+        "A                                                                                  A",
+        "A                                                                                  A",
+        "A                                                                                  A",
+        "A                                                                                  A",
+        "A                                                                                  A", 
+        "A                                                                                  A",
+        "A                                                                                  A",
+        "A                                                                                  A",
+        "A                                                                                  A",
+        "A                                                                                  A",
+        "A                                                                                  A",
+        "A        P                                                                         A",
+        "A                                                                                  A",
+        "A                                                                                  A",
+        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",]
     #level bouwen
     for row in level:
         for col in row:
@@ -55,18 +53,42 @@ def main():
                 platforms.append(a)
                 entities.add(a)
             if col == "B":
-                b = Platform(x, y, "2")
-                platforms.append(b)
-                entities.add(b)
+                a = Platform(x, y, "2")
+                platforms.append(a)
+                entities.add(a)
+            if col == "C":
+                a = Platform(x, y, "3")
+                platforms.append(a)
+                entities.add(a)
+            if col == "D":
+                a = Platform(x, y, "4")
+                platforms.append(a)
+                entities.add(a)
+            if col == "E":
+                a = Platform(x, y, "5")
+                platforms.append(a)
+                entities.add(a)
+            if col == "F":
+                a = Platform(x, y, "6")
+                platforms.append(a)
+                entities.add(a)
+            if col == "G":
+                a = Platform(x, y, "7")
+                platforms.append(a)
+                entities.add(a)
+            if col == "H":
+                a = Platform(x, y, "8")
+                platforms.append(a)
+                entities.add(a)
             if col == "Z":
-                z = Background(x, y, "1")
-                entities.add(z) #geen platforms.append omdat de speler er niet tegenaan moet botsen
+                a = Background(x, y, "1")
+                entities.add(a) #geen platforms.append omdat de speler er niet tegenaan moet botsen
             if col == "Y":
-                z = Background(x, y, "2")
-                entities.add(z)
+                a = Background(x, y, "2")
+                entities.add(a)
             if col == "X":
-                z = Background(x, y, "3")
-                entities.add(z)
+                a = Background(x, y, "3")
+                entities.add(a)
             x += 32
         y += 32
         x = 0
@@ -180,7 +202,7 @@ class Player(Entity):
 
     def animate(self):
         now = pygame.time.get_ticks()
-        if self.xvel != 0 and self.onGround == True:
+        if self.xvel != 0:
             self.walking = True
         else:
             self.walking = False
@@ -214,7 +236,7 @@ class Player(Entity):
     def update(self, up, down, left, right, running, platforms):
         if up:
             #je kan alleen springen als je op een platform staat
-            if self.onGround: self.yvel -= 8
+            if self.onGround: self.yvel -= 10
         if left:
             self.xvel = -8
         if right:
@@ -266,6 +288,12 @@ class Platform(Entity):
         global PlatformImages
         PlatformImages['platform_1'] = pygame.image.load(r"C:/Users/Gebruiker/Downloads/Profielwerkstuk/Objects/blok1.png").convert() #verander r"C:/....png" naar waar blok1 staat opgeslagen op pc
         PlatformImages['platform_2'] = pygame.image.load(r"C:/Users/Gebruiker/Downloads/Profielwerkstuk/Objects/blok2.png").convert()
+        PlatformImages['platform_3'] = pygame.image.load(r"C:/Users/Gebruiker/Downloads/Profielwerkstuk/Objects/blok3.png").convert()
+        PlatformImages['platform_4'] = pygame.image.load(r"C:/Users/Gebruiker/Downloads/Profielwerkstuk/Objects/blok4.png").convert()
+        PlatformImages['platform_5'] = pygame.image.load(r"C:/Users/Gebruiker/Downloads/Profielwerkstuk/Objects/blok5.png").convert()
+        PlatformImages['platform_6'] = pygame.image.load(r"C:/Users/Gebruiker/Downloads/Profielwerkstuk/Objects/blok6.png").convert()
+        PlatformImages['platform_7'] = pygame.image.load(r"C:/Users/Gebruiker/Downloads/Profielwerkstuk/Objects/blok7.png").convert()
+        PlatformImages['platform_8'] = pygame.image.load(r"C:/Users/Gebruiker/Downloads/Profielwerkstuk/Objects/blok8.png").convert()
 
 class Background(Entity):
     def __init__(self, x, y, number):
