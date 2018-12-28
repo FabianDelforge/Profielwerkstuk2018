@@ -1,3 +1,4 @@
+import os
 import pygame
 from pygame import *
 
@@ -10,7 +11,7 @@ display_height = 640
 def main():
     pygame.init()
     screen = pygame.display.set_mode((display_width, display_height), 0, 32)
-    pygame.display.set_caption("Use arrows to move!")
+    pygame.display.set_caption("Profielwerkstuk 2018")
     timer = pygame.time.Clock()
 
     up = down = left = right = running = False
@@ -178,20 +179,21 @@ class Player(Entity):
         self.rect = self.image.get_rect(topleft=(x,y))
 
     def load_images(self):
-        self.standing_frame_right = pygame.image.load("C:/Users/Gebruiker/Downloads/Profielwerkstuk/Character Sprites/pws_character_sprite_rest.png")
+        character_folder = "/Profielwerkstuk/Character Sprites/"
+        self.standing_frame_right = pygame.image.load(os.path.join(character_folder, "pws_character_sprite_rest.png"))
         self.standing_frame_right = pygame.transform.scale(self.standing_frame_right, tuple([int(i*0.15) for i in self.standing_frame_right.get_rect().size]))
-        self.walking_frame_startup_right = pygame.image.load("C:/Users/Gebruiker/Downloads/Profielwerkstuk/Character Sprites/pws_character_sprite_run_2.png")
+        self.walking_frame_startup_right = pygame.image.load(os.path.join(character_folder, "pws_character_sprite_run_2.png"))
         self.walking_frame_startup_right = pygame.transform.scale(self.walking_frame_startup_right, tuple([int(i*0.15) for i in self.walking_frame_startup_right.get_rect().size]))
-        self.walking_frames_right = [pygame.image.load("C:/Users/Gebruiker/Downloads/Profielwerkstuk/Character Sprites/pws_character_sprite_run_3.png"),
-                                     pygame.image.load("C:/Users/Gebruiker/Downloads/Profielwerkstuk/Character Sprites/pws_character_sprite_run_4.png"),
-                                     pygame.image.load("C:/Users/Gebruiker/Downloads/Profielwerkstuk/Character Sprites/pws_character_sprite_run_5.png"),
-                                     pygame.image.load("C:/Users/Gebruiker/Downloads/Profielwerkstuk/Character Sprites/pws_character_sprite_run_6.png"),
-                                     pygame.image.load("C:/Users/Gebruiker/Downloads/Profielwerkstuk/Character Sprites/pws_character_sprite_run_7.png"),
-                                     pygame.image.load("C:/Users/Gebruiker/Downloads/Profielwerkstuk/Character Sprites/pws_character_sprite_run_8.png"),
-                                     pygame.image.load("C:/Users/Gebruiker/Downloads/Profielwerkstuk/Character Sprites/pws_character_sprite_run_9.png"),
-                                     pygame.image.load("C:/Users/Gebruiker/Downloads/Profielwerkstuk/Character Sprites/pws_character_sprite_run_10.png"),
-                                     pygame.image.load("C:/Users/Gebruiker/Downloads/Profielwerkstuk/Character Sprites/pws_character_sprite_run_11.png"),
-                                     pygame.image.load("C:/Users/Gebruiker/Downloads/Profielwerkstuk/Character Sprites/pws_character_sprite_run_12.png")]
+        self.walking_frames_right = [pygame.image.load(os.path.join(character_folder, "pws_character_sprite_run_3.png")),
+                                     pygame.image.load(os.path.join(character_folder, "pws_character_sprite_run_4.png")),
+                                     pygame.image.load(os.path.join(character_folder, "pws_character_sprite_run_5.png")),
+                                     pygame.image.load(os.path.join(character_folder, "pws_character_sprite_run_6.png")),
+                                     pygame.image.load(os.path.join(character_folder, "pws_character_sprite_run_7.png")),
+                                     pygame.image.load(os.path.join(character_folder, "pws_character_sprite_run_8.png")),
+                                     pygame.image.load(os.path.join(character_folder, "pws_character_sprite_run_9.png")),
+                                     pygame.image.load(os.path.join(character_folder, "pws_character_sprite_run_10.png")),
+                                     pygame.image.load(os.path.join(character_folder, "pws_character_sprite_run_11.png")),
+                                     pygame.image.load(os.path.join(character_folder, "pws_character_sprite_run_12.png"))]
         for i in range (0, len(self.walking_frames_right)):
             self.walking_frames_right[i] = pygame.transform.scale(self.walking_frames_right[i], tuple([int(i*0.15) for i in self.walking_frames_right[i].get_rect().size]))
         self.standing_frame_left = pygame.transform.flip(self.standing_frame_right, True, False)
@@ -276,7 +278,7 @@ class Player(Entity):
                     self.rect.top = p.rect.bottom
                     self.yvel = 0
 
-
+object_folder = "/Profielwerkstuk/Objects/"
 class Platform(Entity):
     def __init__(self, x, y, number):
         Entity.__init__(self)
@@ -286,14 +288,14 @@ class Platform(Entity):
 
     def load_images(self):
         global PlatformImages
-        PlatformImages['platform_1'] = pygame.image.load(r"C:/Users/Gebruiker/Downloads/Profielwerkstuk/Objects/blok1.png").convert() #verander r"C:/....png" naar waar blok1 staat opgeslagen op pc
-        PlatformImages['platform_2'] = pygame.image.load(r"C:/Users/Gebruiker/Downloads/Profielwerkstuk/Objects/blok2.png").convert()
-        PlatformImages['platform_3'] = pygame.image.load(r"C:/Users/Gebruiker/Downloads/Profielwerkstuk/Objects/blok3.png").convert()
-        PlatformImages['platform_4'] = pygame.image.load(r"C:/Users/Gebruiker/Downloads/Profielwerkstuk/Objects/blok4.png").convert()
-        PlatformImages['platform_5'] = pygame.image.load(r"C:/Users/Gebruiker/Downloads/Profielwerkstuk/Objects/blok5.png").convert()
-        PlatformImages['platform_6'] = pygame.image.load(r"C:/Users/Gebruiker/Downloads/Profielwerkstuk/Objects/blok6.png").convert()
-        PlatformImages['platform_7'] = pygame.image.load(r"C:/Users/Gebruiker/Downloads/Profielwerkstuk/Objects/blok7.png").convert()
-        PlatformImages['platform_8'] = pygame.image.load(r"C:/Users/Gebruiker/Downloads/Profielwerkstuk/Objects/blok8.png").convert()
+        PlatformImages['platform_1'] = pygame.image.load(os.path.join(object_folder, "blok1.png")).convert() #verander r"C:/....png" naar waar blok1 staat opgeslagen op pc
+        PlatformImages['platform_2'] = pygame.image.load(os.path.join(object_folder, "blok2.png")).convert()
+        PlatformImages['platform_3'] = pygame.image.load(os.path.join(object_folder, "blok3.png")).convert()
+        PlatformImages['platform_4'] = pygame.image.load(os.path.join(object_folder, "blok4.png")).convert()
+        PlatformImages['platform_5'] = pygame.image.load(os.path.join(object_folder, "blok5.png")).convert()
+        PlatformImages['platform_6'] = pygame.image.load(os.path.join(object_folder, "blok6.png")).convert()
+        PlatformImages['platform_7'] = pygame.image.load(os.path.join(object_folder, "blok7.png")).convert()
+        PlatformImages['platform_8'] = pygame.image.load(os.path.join(object_folder, "blok8.png")).convert()
 
 class Background(Entity):
     def __init__(self, x, y, number):
@@ -304,9 +306,9 @@ class Background(Entity):
 
     def load_images(self):
         global BGImages
-        BGImages['BG_1'] = pygame.image.load(r"C:/Users/Gebruiker/Downloads/Profielwerkstuk/Objects/achtergrond1.png").convert() #als transparente dingen niet werken probeer .convert_alpha()
-        BGImages['BG_2'] = pygame.image.load(r"C:/Users/Gebruiker/Downloads/Profielwerkstuk/Objects/achtergrond2.png").convert()
-        BGImages['BG_3'] = pygame.image.load(r"C:/Users/Gebruiker/Downloads/Profielwerkstuk/Objects/achtergrond3.png").convert()
+        BGImages['BG_1'] = pygame.image.load(os.path.join(object_folder, "achtergrond1.png")).convert() #als transparente dingen niet werken probeer .convert_alpha()
+        BGImages['BG_2'] = pygame.image.load(os.path.join(object_folder, "achtergrond2.png")).convert()
+        BGImages['BG_3'] = pygame.image.load(os.path.join(object_folder, "achtergrond3.png")).convert()
 
 class ExitBlock(Platform):
     def __init__(self, x, y):
