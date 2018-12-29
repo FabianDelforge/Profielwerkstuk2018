@@ -24,26 +24,26 @@ def main():
 
     x = y = 0
     level = [
-        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-        "A                                                                                  A",
-        "A                                                                                  A",
-        "A                                                                                  A",
-        "A                                                                                  A",
-        "A                                                                                  A",
-        "A                                                                                  A",
-        "A                                                                                  A",
-        "A                                                                                  A",
-        "A                                                                                  A", 
-        "A                                                                                  A",
-        "A                                                                                  A",
-        "A                                                                                  A",
-        "A                                                                                  A",
-        "A                                                                                  A",
-        "A                                                                                  A",
-        "A        P                                                                         A",
-        "A                                                                                  A",
-        "A                                                                                  A",
-        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",]
+        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "A                ABA                                                                                A",
+        "A                ABA                                                                                A",
+        "A                ABA                                                                                A",
+        "A                ABA                                                                                A",
+        "A                ABA                                                                       BAAAB    A",
+        "A                ABA                                                                       A   A    A",
+        "A                ABA                                                                       A   A    A",
+        "A                ABA                BAAAAAAAAAAAAAAAAAAAAB                              AAAA   A    A",
+        "A                ABA                                 A                               AAA       A    A", 
+        "A                ABA                                 A                            AAA          A    A",
+        "A                ABA                                 A                         AAA             A    A",
+        "A                ABAAAAAAAB                          A                      BAA                A    A",
+        "A                AAAAAAAAAA                          BAAAAAAAAAAAAAAB                      BBBBB    B",
+        "A                                                                                          B        B",
+        "A                                                                                          B        B",
+        "A        P                            BAAAAB                                               B        B",
+        "A                                                                                          B        B",
+        "A                                                                                          B        B",
+        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBBBBBBBBB",]
     #level bouwen
     for row in level:
         for col in row:
@@ -170,6 +170,7 @@ class Player(Entity):
         self.yvel = 0
         self.onGround = False
         self.walking = False
+        self.frame_change = 80      #na hoeveel aantal ticks het character frame verandert
         self.walking_startup = 1
         self.goingRight = 1         #kijkend naar rechts: 1       kijkend naar links: 0
         self.load_images()          #als hij net begint met lopen: 1   als hij al loopt: _run_2 niet laten zien, dus 0
@@ -205,12 +206,13 @@ class Player(Entity):
     def animate(self):
         now = pygame.time.get_ticks()
         if abs(self.xvel) >= 0.5:
-            self.walking = True
+            if self.onGround:
+                self.walking = True
         else:
             self.walking = False
             self.walking_startup = 1
         if self.walking:
-            if now - self.last_update > 80:
+            if now - self.last_update > self.frame_change:
                 self.last_update = now
                 self.current_frame = (self.current_frame + 1) % len(self.walking_frames_right)
                 if self.xvel > 0:
@@ -220,7 +222,7 @@ class Player(Entity):
                     else:
                         self.image = self.walking_frames_right[self.current_frame]
                     self.goingRight = 1
-                else:
+                elif self.xvel < 0:
                     if self.walking_startup:
                         self.image = self.walking_frame_startup_left
                         self.walking_startup = 0
@@ -234,6 +236,8 @@ class Player(Entity):
             else:
                 self.image = self.standing_frame_left
             self.rect = self.image.get_rect(topleft=(self.rect.topleft))
+        elif self.onGround == False:
+            pass
 
     def update(self, up, down, left, right, running, platforms):
         if up:
