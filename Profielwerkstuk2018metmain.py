@@ -17,7 +17,7 @@ def main():
     up = down = left = right = running = False
     
     bg = Surface((display_width, display_height)).convert()
-    bg.fill(Color("#ff2d03"))
+    bg.fill((15,150,150))
     
     entities = pygame.sprite.Group()
     platforms = []
@@ -204,13 +204,13 @@ class Player(Entity):
 
     def animate(self):
         now = pygame.time.get_ticks()
-        if self.xvel != 0:
+        if abs(self.xvel) >= 0.5:
             self.walking = True
         else:
             self.walking = False
             self.walking_startup = 1
         if self.walking:
-            if now - self.last_update > 100:
+            if now - self.last_update > 80:
                 self.last_update = now
                 self.current_frame = (self.current_frame + 1) % len(self.walking_frames_right)
                 if self.xvel > 0:
@@ -238,18 +238,21 @@ class Player(Entity):
     def update(self, up, down, left, right, running, platforms):
         if up:
             #je kan alleen springen als je op een platform staat
-            if self.onGround: self.yvel -= 10
+            if self.onGround:
+                self.yvel -= 10
         if left:
             self.xvel = -8
         if right:
-            self.xvel = 8
+            self.xvel = 8 
         if not self.onGround:
             #zwaartekracht als je niet op een platform staat
-            self.yvel += 0.3
+            self.yvel += 0.35
             #maximum valsnelheid
             if self.yvel > 100: self.yvel = 100
         if not(left or right):
-            self.xvel = 0
+            self.xvel *= 0.5
+            if abs(self.xvel) <= 0.1:
+                self.xvel = 0
         #verandering x-richting
         self.rect.left += self.xvel
         #kijken of er botsingen in de x-richting zijn
