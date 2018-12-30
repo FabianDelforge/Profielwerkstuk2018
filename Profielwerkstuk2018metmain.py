@@ -40,7 +40,7 @@ def main():
         "A                AAAAAAAAAA                          BAAAAAAAAAAAAAAB                      BBBBB    B",
         "A                                                                                          B        B",
         "A                                                                                          B        B",
-        "A        P                            BAAAAB                                               B        B",
+        "A        P                            BAAAAB                                               B   E    B",
         "A                                                                                          B        B",
         "A                                                                                          B        B",
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBBBBBBBBB",]
@@ -57,28 +57,8 @@ def main():
                 a = Platform(x, y, "2")
                 platforms.append(a)
                 entities.add(a)
-            if col == "C":
-                a = Platform(x, y, "3")
-                platforms.append(a)
-                entities.add(a)
-            if col == "D":
-                a = Platform(x, y, "4")
-                platforms.append(a)
-                entities.add(a)
             if col == "E":
-                a = Platform(x, y, "5")
-                platforms.append(a)
-                entities.add(a)
-            if col == "F":
-                a = Platform(x, y, "6")
-                platforms.append(a)
-                entities.add(a)
-            if col == "G":
-                a = Platform(x, y, "7")
-                platforms.append(a)
-                entities.add(a)
-            if col == "H":
-                a = Platform(x, y, "8")
+                a = ExitBlock(x, y)
                 platforms.append(a)
                 entities.add(a)
             if col == "Z":
@@ -105,9 +85,11 @@ def main():
 
         for e in pygame.event.get():
             if e.type == QUIT:
-                quit()
+                pygame.quit()
+                exit()
             if e.type == KEYDOWN and e.key == K_ESCAPE:
-                quit()
+                pygame.quit()
+                exit()
             
             if e.type == KEYDOWN and e.key == K_UP:
                 up = True
@@ -180,21 +162,21 @@ class Player(Entity):
         self.rect = self.image.get_rect(topleft=(x,y))
 
     def load_images(self):
-        character_folder = "/Profielwerkstuk/Character Sprites/"
-        self.standing_frame_right = pygame.image.load(os.path.join(character_folder, "pws_character_sprite_rest.png"))
+        character_folder = "C:/Users/Gebruiker/Downloads/Profielwerkstuk/Character Sprites/"
+        self.standing_frame_right = pygame.image.load(os.path.join(character_folder, "pws_character_sprite_rest.png")).convert_alpha()
         self.standing_frame_right = pygame.transform.scale(self.standing_frame_right, tuple([int(i*0.15) for i in self.standing_frame_right.get_rect().size]))
         self.walking_frame_startup_right = pygame.image.load(os.path.join(character_folder, "pws_character_sprite_run_2.png"))
         self.walking_frame_startup_right = pygame.transform.scale(self.walking_frame_startup_right, tuple([int(i*0.15) for i in self.walking_frame_startup_right.get_rect().size]))
-        self.walking_frames_right = [pygame.image.load(os.path.join(character_folder, "pws_character_sprite_run_3.png")),
-                                     pygame.image.load(os.path.join(character_folder, "pws_character_sprite_run_4.png")),
-                                     pygame.image.load(os.path.join(character_folder, "pws_character_sprite_run_5.png")),
-                                     pygame.image.load(os.path.join(character_folder, "pws_character_sprite_run_6.png")),
-                                     pygame.image.load(os.path.join(character_folder, "pws_character_sprite_run_7.png")),
-                                     pygame.image.load(os.path.join(character_folder, "pws_character_sprite_run_8.png")),
-                                     pygame.image.load(os.path.join(character_folder, "pws_character_sprite_run_9.png")),
-                                     pygame.image.load(os.path.join(character_folder, "pws_character_sprite_run_10.png")),
-                                     pygame.image.load(os.path.join(character_folder, "pws_character_sprite_run_11.png")),
-                                     pygame.image.load(os.path.join(character_folder, "pws_character_sprite_run_12.png"))]
+        self.walking_frames_right = [pygame.image.load(os.path.join(character_folder, "pws_character_sprite_run_3.png")).convert_alpha(),
+                                     pygame.image.load(os.path.join(character_folder, "pws_character_sprite_run_4.png")).convert_alpha(),
+                                     pygame.image.load(os.path.join(character_folder, "pws_character_sprite_run_5.png")).convert_alpha(),
+                                     pygame.image.load(os.path.join(character_folder, "pws_character_sprite_run_6.png")).convert_alpha(),
+                                     pygame.image.load(os.path.join(character_folder, "pws_character_sprite_run_7.png")).convert_alpha(),
+                                     pygame.image.load(os.path.join(character_folder, "pws_character_sprite_run_8.png")).convert_alpha(),
+                                     pygame.image.load(os.path.join(character_folder, "pws_character_sprite_run_9.png")).convert_alpha(),
+                                     pygame.image.load(os.path.join(character_folder, "pws_character_sprite_run_10.png")).convert_alpha(),
+                                     pygame.image.load(os.path.join(character_folder, "pws_character_sprite_run_11.png")).convert_alpha(),
+                                     pygame.image.load(os.path.join(character_folder, "pws_character_sprite_run_12.png")).convert_alpha()]
         for i in range (0, len(self.walking_frames_right)):
             self.walking_frames_right[i] = pygame.transform.scale(self.walking_frames_right[i], tuple([int(i*0.15) for i in self.walking_frames_right[i].get_rect().size]))
         self.standing_frame_left = pygame.transform.flip(self.standing_frame_right, True, False)
@@ -285,7 +267,7 @@ class Player(Entity):
                     self.rect.top = p.rect.bottom
                     self.yvel = 0
 
-object_folder = "/Profielwerkstuk/Objects/"
+object_folder = "C:/Users/Gebruiker/Downloads/Profielwerkstuk/Objects/"
 class Platform(Entity):
     def __init__(self, x, y, number):
         Entity.__init__(self)
@@ -295,14 +277,8 @@ class Platform(Entity):
 
     def load_images(self):
         global PlatformImages
-        PlatformImages['platform_1'] = pygame.image.load(os.path.join(object_folder, "blok1.png")).convert() #verander r"C:/....png" naar waar blok1 staat opgeslagen op pc
-        PlatformImages['platform_2'] = pygame.image.load(os.path.join(object_folder, "blok2.png")).convert()
-        PlatformImages['platform_3'] = pygame.image.load(os.path.join(object_folder, "blok3.png")).convert()
-        PlatformImages['platform_4'] = pygame.image.load(os.path.join(object_folder, "blok4.png")).convert()
-        PlatformImages['platform_5'] = pygame.image.load(os.path.join(object_folder, "blok5.png")).convert()
-        PlatformImages['platform_6'] = pygame.image.load(os.path.join(object_folder, "blok6.png")).convert()
-        PlatformImages['platform_7'] = pygame.image.load(os.path.join(object_folder, "blok7.png")).convert()
-        PlatformImages['platform_8'] = pygame.image.load(os.path.join(object_folder, "blok8.png")).convert()
+        PlatformImages['platform_1'] = pygame.image.load(os.path.join(object_folder, "blok1.png")).convert_alpha()
+        PlatformImages['platform_2'] = pygame.image.load(os.path.join(object_folder, "blok2.png")).convert_alpha()
 
 class Background(Entity):
     def __init__(self, x, y, number):
@@ -313,14 +289,15 @@ class Background(Entity):
 
     def load_images(self):
         global BGImages
-        BGImages['BG_1'] = pygame.image.load(os.path.join(object_folder, "achtergrond1.png")).convert() #als transparente dingen niet werken probeer .convert_alpha()
-        BGImages['BG_2'] = pygame.image.load(os.path.join(object_folder, "achtergrond2.png")).convert()
-        BGImages['BG_3'] = pygame.image.load(os.path.join(object_folder, "achtergrond3.png")).convert()
+        BGImages['BG_1'] = pygame.image.load(os.path.join(object_folder, "achtergrond1.png")).convert_alpha() #als transparente dingen niet werken probeer .convert_alpha()
+        BGImages['BG_2'] = pygame.image.load(os.path.join(object_folder, "achtergrond2.png")).convert_alpha()
+        BGImages['BG_3'] = pygame.image.load(os.path.join(object_folder, "achtergrond3.png")).convert_alpha()
 
-class ExitBlock(Platform):
+class ExitBlock(Entity):
     def __init__(self, x, y):
-        Platform.__init__(self, x, y)
-        self.image.fill(Color("#0033FF"))
-
+        Entity.__init__(self)
+        self.image = pygame.image.load(os.path.join(object_folder, "Exitblok.png")).convert()
+        self.rect = self.image.get_rect(topleft=(x,y))
+                                                 
 if __name__ == "__main__":
     main()
