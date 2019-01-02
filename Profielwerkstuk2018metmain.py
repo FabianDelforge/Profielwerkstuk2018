@@ -2,81 +2,36 @@ import os
 import pygame
 from pygame import *
 
+pygame.init()
+pygame.font.init()
+
+entities = pygame.sprite.Group()
+
 PlatformImages = {}
 BGImages = {}
 
 display_width = 800
 display_height = 640
 
-def main():
-    pygame.init()
-    screen = pygame.display.set_mode((display_width, display_height), 0, 32)
-    pygame.display.set_caption("Profielwerkstuk 2018")
-    timer = pygame.time.Clock()
+screen = pygame.display.set_mode((display_width, display_height), 0, 32)
+pygame.display.set_caption("Profielwerkstuk 2018")
+timer = pygame.time.Clock()
 
+def main():
+    level_playing = show_start_screen(screen)
+    
     up = down = left = right = running = False
     
     bg = Surface((display_width, display_height)).convert()
     bg.fill((15,150,150))
     
-    entities = pygame.sprite.Group()
-    platforms = []
 
-    x = y = 0
-    level = [
-        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-        "A                ABA                                                                                A",
-        "A                ABA                                                                                A",
-        "A                ABA                                                                                A",
-        "A                ABA                                                                                A",
-        "A                ABA                                                                       BAAAB    A",
-        "A                ABA                                                                       A   A    A",
-        "A                ABA                                                                       A   A    A",
-        "A                ABA                BAAAAAAAAAAAAAAAAAAAAB                              AAAA   A    A",
-        "A                ABA                                 A                               AAA       A    A", 
-        "A                ABA                                 A                            AAA          A    A",
-        "A                ABA                                 A                         AAA             A    A",
-        "A                ABAAAAAAAB                          A                      BAA                A    A",
-        "A                AAAAAAAAAA                          BAAAAAAAAAAAAAAB                      BBBBB    B",
-        "A                                                                                          B        B",
-        "A                                                                                          B        B",
-        "A        P                            BAAAAB                                               B   E    B",
-        "A                                                                                          B        B",
-        "A                                                                                          B        B",
-        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBBBBBBBBB",]
-    #level bouwen
-    for row in level:
-        for col in row:
-            if col == "P":
-                player = Player(x, y)
-            if col == "A":
-                a = Platform(x, y, "1")
-                platforms.append(a)
-                entities.add(a)
-            if col == "B":
-                a = Platform(x, y, "2")
-                platforms.append(a)
-                entities.add(a)
-            if col == "E":
-                a = ExitBlock(x, y)
-                platforms.append(a)
-                entities.add(a)
-            if col == "Z":
-                a = Background(x, y, "1")
-                entities.add(a) #geen platforms.append omdat de speler er niet tegenaan moet botsen
-            if col == "Y":
-                a = Background(x, y, "2")
-                entities.add(a)
-            if col == "X":
-                a = Background(x, y, "3")
-                entities.add(a)
-            x += 32
-        y += 32
-        x = 0
+    
+    
+    camera = Camera(complex_camera, level_playing[0], level_playing[1])
 
-    total_level_width  = len(level[0])*32 #lengte level berekenen in pixels
-    total_level_height = len(level)*32  
-    camera = Camera(complex_camera, total_level_width, total_level_height)
+    player = level_playing[2]
+    platforms = level_playing[3]
      
     entities.add(player)
 
@@ -141,9 +96,70 @@ def complex_camera(camera, target_rect):
 
     return camera
 
+
+
+
 class Entity(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
+
+
+
+
+class Button():
+    def __init__(self, x, y, width, height, colour, txt):
+        #extra geeft de ruimte aan in pixels die nodig is om de text ongeveer in het midden van de knop te zetten
+        
+        self.image = pygame.Surface((width, height)).convert()
+        self.image.fill(colour)
+        self.rect = Rect(x, y, width, height)
+        
+        self.font = pygame.font.SysFont('Arial', 40)
+        self.text = self.font.render(txt, True, (0,0,0))
+        screen.blit(self.image, (x,y))
+        screen.blit(self.text, (x + ((width - self.text.get_rect().width) / 2) , y + (height - self.text.get_rect().height) / 2))
+                
+
+def show_start_screen(screen):
+    screen.fill((10,100,100))
+    play_button = Button(300, 180, 200, 60, (150,15,15), "Play")
+    quit_button = Button(300, 280, 200, 60, (150,15,15), "Quit")
+    showStartScreen = True
+    while showStartScreen:
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = event.pos   #geeft positie van de muis
+                if play_button.rect.collidepoint(mouse_pos):
+                    level_1 = build_level( [        #hier staat trouwens LEVEL_EEN, niet LEVEL_L (kut font)
+                                            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+                                            "A                ABA                                                                                A",
+                                            "A                ABA                                                                                A",
+                                            "A                ABA                                                                                A",
+                                            "A                ABA                                                                                A",
+                                            "A                ABA                                                                       BAAAB    A",
+                                            "A                ABA                                                                       A   A    A",
+                                            "A                ABA                                                                       A   A    A",
+                                            "A                ABA                BAAAAAAAAAAAAAAAAAAAAB                              AAAA   A    A",
+                                            "A                ABA                                 A                               AAA       A    A", 
+                                            "A                ABA                                 A                            AAA          A    A",
+                                            "A                ABA                                 A                         AAA             A    A",
+                                            "A                ABAAAAAAAB                          A                      BAA                A    A",
+                                            "A                AAAAAAAAAA                          BAAAAAAAAAAAAAAB                      BBBBB    B",
+                                            "A                                                                                          B        B",
+                                            "A                                                                                          B        B",
+                                            "A        P                            BAAAAB                                               B   E    B",
+                                            "A                                                                                          B        B",
+                                            "A                                                                                          B        B",
+                                            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBBBBBBBBB",] )
+                    return level_1
+
+                if quit_button.rect.collidepoint(mouse_pos):
+                    pygame.quit()
+                    exit()
+        pygame.display.update()
+
+
+
 
 class Player(Entity):
     def __init__(self, x, y):
@@ -162,7 +178,7 @@ class Player(Entity):
         self.rect = self.image.get_rect(topleft=(x,y))
 
     def load_images(self):
-        character_folder = "C:/Users/Gebruiker/Downloads/Profielwerkstuk/Character Sprites/"
+        character_folder = "/Profielwerkstuk/Character Sprites/"
         self.standing_frame_right = pygame.image.load(os.path.join(character_folder, "pws_character_sprite_rest.png")).convert_alpha()
         self.standing_frame_right = pygame.transform.scale(self.standing_frame_right, tuple([int(i*0.15) for i in self.standing_frame_right.get_rect().size]))
         self.walking_frame_startup_right = pygame.image.load(os.path.join(character_folder, "pws_character_sprite_run_2.png"))
@@ -254,7 +270,7 @@ class Player(Entity):
         for p in platforms:
             if pygame.sprite.collide_rect(self, p):
                 if isinstance(p, ExitBlock):
-                    pygame.event.post(pygame.event.Event(QUIT)) #einde van level, nog niet toegevoegd
+                    show_start_screen(screen) #einde van level, nog niet toegevoegd
                 if xvel > 0:
                     self.rect.right = p.rect.left
                 if xvel < 0:
@@ -267,7 +283,7 @@ class Player(Entity):
                     self.rect.top = p.rect.bottom
                     self.yvel = 0
 
-object_folder = "C:/Users/Gebruiker/Downloads/Profielwerkstuk/Objects/"
+object_folder = "/Profielwerkstuk/Objects/"
 class Platform(Entity):
     def __init__(self, x, y, number):
         Entity.__init__(self)
@@ -298,6 +314,48 @@ class ExitBlock(Entity):
         Entity.__init__(self)
         self.image = pygame.image.load(os.path.join(object_folder, "Exitblok.png")).convert()
         self.rect = self.image.get_rect(topleft=(x,y))
-                                                 
+
+
+def build_level(level):
+    platforms = []
+    x = y = 0
+    #level bouwen
+    for row in level:
+        for col in row:
+            if col == "P":
+                player = Player(x, y)
+            if col == "A":
+                a = Platform(x, y, "1")
+                platforms.append(a)
+                entities.add(a)
+            if col == "B":
+                a = Platform(x, y, "2")
+                platforms.append(a)
+                entities.add(a)
+            if col == "E":
+                a = ExitBlock(x, y)
+                platforms.append(a)
+                entities.add(a)
+            if col == "Z":
+                a = Background(x, y, "1")
+                entities.add(a) #geen platforms.append omdat de speler er niet tegenaan moet botsen
+            if col == "Y":
+                a = Background(x, y, "2")
+                entities.add(a)
+            if col == "X":
+                a = Background(x, y, "3")
+                entities.add(a)
+            x += 32
+        y += 32
+        x = 0
+
+    total_level_width  = len(level[0])*32 #lengte level berekenen in pixels
+    total_level_height = len(level)*32
+
+    levelList = [total_level_width, total_level_height, player, platforms]
+    return levelList
+
+        
+          
 if __name__ == "__main__":
     main()
