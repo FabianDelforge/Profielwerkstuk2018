@@ -66,11 +66,13 @@ def main():
         camera.update(player) #camera volgt de speler, kan overigens ook andere sprites volgen
 
         #speler updaten, alle andere sprites op scherm tevoorschijn toveren
-        player.update(up, down, left, right, running, platforms)
+        test = player.update(up, down, left, right, running, platforms)
+        if test == 666:
+            print("iets")
         player.animate()
         for e in entities:
             screen.blit(e.image, camera.apply(e)) #alle entities bewegen met het scherm mee
-
+        
         pygame.display.update()
 
 class Camera(object):
@@ -178,7 +180,7 @@ class Player(Entity):
         self.rect = self.image.get_rect(topleft=(x,y))
 
     def load_images(self):
-        character_folder = "/Profielwerkstuk/Character Sprites/"
+        character_folder = "C:/Users/Gebruiker/Downloads/Profielwerkstuk/Character Sprites/"
         self.standing_frame_right = pygame.image.load(os.path.join(character_folder, "pws_character_sprite_rest.png")).convert_alpha()
         self.standing_frame_right = pygame.transform.scale(self.standing_frame_right, tuple([int(i*0.15) for i in self.standing_frame_right.get_rect().size]))
         self.walking_frame_startup_right = pygame.image.load(os.path.join(character_folder, "pws_character_sprite_run_2.png"))
@@ -264,13 +266,12 @@ class Player(Entity):
         #we nemen altijd eerst aan dat de speler in de lucht is
         self.onGround = False;
         #kijken of er botsingen in de y-richting zijn
-        self.collide(0, self.yvel, platforms)
+        asdf = self.collide(0, self.yvel, platforms)
+        return asdf
 
     def collide(self, xvel, yvel, platforms):
         for p in platforms:
             if pygame.sprite.collide_rect(self, p):
-                if isinstance(p, ExitBlock):
-                    show_start_screen(screen) #einde van level, nog niet toegevoegd
                 if xvel > 0:
                     self.rect.right = p.rect.left
                 if xvel < 0:
@@ -282,8 +283,10 @@ class Player(Entity):
                 if yvel < 0:
                     self.rect.top = p.rect.bottom
                     self.yvel = 0
+                if isinstance(p, ExitBlock):
+                    return 666
 
-object_folder = "/Profielwerkstuk/Objects/"
+object_folder = "C:/Users/Gebruiker/Downloads/Profielwerkstuk/Objects/"
 class Platform(Entity):
     def __init__(self, x, y, number):
         Entity.__init__(self)
