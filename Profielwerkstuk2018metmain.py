@@ -24,14 +24,12 @@ def main():
     
     bg = Surface((display_width, display_height)).convert()
     bg.fill((15,150,150))
-    
-
-    
-    
+     
     camera = Camera(complex_camera, level_playing[0], level_playing[1])
 
     player = level_playing[2]
     platforms = level_playing[3]
+    backgrounds = level_playing[4]
      
     entities.add(player)
 
@@ -65,11 +63,20 @@ def main():
 
         camera.update(player) #camera volgt de speler, kan overigens ook andere sprites volgen
 
-        #speler updaten, alle andere sprites op scherm tevoorschijn toveren
-        test = player.update(up, down, left, right, running, platforms)
-        if test == 666:
-            print("iets")
+        #speler updaten, alle andere sprites op scherm tevoorschijn toveren 
+        if player.update(up, down, left, right, running, platforms) == "NextLevel":
+            entities.remove(player)
+            entities.remove(platforms)
+            entities.remove(backgrounds)
+            level_playing = build_level(level_2)
+            camera = Camera(complex_camera, level_playing[0], level_playing[1])
+            player = level_playing[2]
+            platforms = level_playing[3]
+            backgrounds = level_playing[4]
+            entities.add(player)
+        
         player.animate()
+        
         for e in entities:
             screen.blit(e.image, camera.apply(e)) #alle entities bewegen met het scherm mee
         
@@ -147,11 +154,11 @@ def show_start_screen(screen):
                                             "A                ABA                                 A                         AAA             A    A",
                                             "A                ABAAAAAAAB                          A                      BAA                A    A",
                                             "A                AAAAAAAAAA                          BAAAAAAAAAAAAAAB                      BBBBB    B",
-                                            "A                                                                                          B        B",
-                                            "A                                                                                          B        B",
-                                            "A        P                            BAAAAB                                               B   E    B",
-                                            "A                                                                                          B        B",
-                                            "A                                                                                          B        B",
+                                            "A                X        X                                                                B        B",
+                                            "A                Y        Y                                                                B        B",
+                                            "A       P        Y        Y           BAAAAB                                               B   E    B",
+                                            "A                Y        Y                                                                B        B",
+                                            "A                Z        Z                                                                B        B",
                                             "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBBBBBBBBB",] )
                     return level_1
 
@@ -266,8 +273,7 @@ class Player(Entity):
         #we nemen altijd eerst aan dat de speler in de lucht is
         self.onGround = False;
         #kijken of er botsingen in de y-richting zijn
-        asdf = self.collide(0, self.yvel, platforms)
-        return asdf
+        return self.collide(0, self.yvel, platforms)
 
     def collide(self, xvel, yvel, platforms):
         for p in platforms:
@@ -284,7 +290,7 @@ class Player(Entity):
                     self.rect.top = p.rect.bottom
                     self.yvel = 0
                 if isinstance(p, ExitBlock):
-                    return 666
+                    return "NextLevel"
 
 object_folder = "C:/Users/Gebruiker/Downloads/Profielwerkstuk/Objects/"
 class Platform(Entity):
@@ -321,6 +327,7 @@ class ExitBlock(Entity):
 
 def build_level(level):
     platforms = []
+    backgrounds = []
     x = y = 0
     #level bouwen
     for row in level:
@@ -341,12 +348,15 @@ def build_level(level):
                 entities.add(a)
             if col == "Z":
                 a = Background(x, y, "1")
+                backgrounds.append(a)
                 entities.add(a) #geen platforms.append omdat de speler er niet tegenaan moet botsen
             if col == "Y":
                 a = Background(x, y, "2")
+                backgrounds.append(a)
                 entities.add(a)
             if col == "X":
                 a = Background(x, y, "3")
+                backgrounds.append(a)
                 entities.add(a)
             x += 32
         y += 32
@@ -355,10 +365,29 @@ def build_level(level):
     total_level_width  = len(level[0])*32 #lengte level berekenen in pixels
     total_level_height = len(level)*32
 
-    levelList = [total_level_width, total_level_height, player, platforms]
+    levelList = [total_level_width, total_level_height, player, platforms, backgrounds]
     return levelList
 
-        
+level_2 =  ["AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+            "A                ABA                                           A                                      A",
+            "A                ABA                                           A                                      A",
+            "A                ABA                                           A                                      A",
+            "A                ABA                                           A                                      A",
+            "A                ABA                                           A                                      A",
+            "A                ABA                 BBAAAAAAAAAAAAAAAAA       A                                      A",
+            "A                ABA                 BB                        A                                      A",
+            "A                ABA                 BB                        A                           AAAAAA     A",
+            "A                ABA                BBB                        A                         AA     A     A", 
+            "A                ABA                 BB                        A                       AA       A     A",
+            "A                ABA                 BB        AAAAAAAAAAAAAAAAA                     AA         A     A",
+            "A                ABA                 BB                        A                   AA           A     A",
+            "A                ABA              BBBBB                        B                 AA                   B",
+            "A                 X               AAABB                        X               AA                     B",
+            "A                 Y         BBB   AAABB                        Y             AA                       B",
+            "A      P          Y         AAA   AAABBB                       Y           AA                   E     B",
+            "A                 Y   BBB   AAAAAAAAABBBB                      Y         AA                           B",
+            "A                 Z   AAA   AAAAAAAAABBBBB                     Z       AA                             B",
+            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBBBBBBBBBBB",]        
           
 if __name__ == "__main__":
     main()
