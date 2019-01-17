@@ -388,6 +388,38 @@ level_2 =  ["AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
             "A                 Y   BBB   AAAAAAAAABBBB                      Y         AA                           B",
             "A                 Z   AAA   AAAAAAAAABBBBB                     Z       AA                             B",
             "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBBBBBBBBBBB",]        
-          
+
+
+level_3 = ["AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+           "A                    X                  AAAAAAAAAAAAAAAA         X                                                                                                                                                                          A",
+           "A       P            Y                  AAAABBBBBBBBAAAA         Y                                                                                                                                                                          A",
+           "A                    Y                  AAABAAAAAAAABAAA         Y                                                                                                                                                                           A",
+           "A                    Z                  AABAABBBBBBAABAA         Y                                                                                                                                                                          A",
+           "AAAAAAAAAAAAAAAAAAAAAA                  AABABAAAAAABABAA         Z                                                                                                                                                                                              A",
+           "AAABBBBBBBBBBBBBBBBBAA                  AABABABBBBBAABAAA        BAAAAAAAAAAAAA                                                                                                                                                                                              A",
+           "AAABAAAAAAABAAAAAAABAA                  AABAABAAAAAAABAA                                                                                                                                                                                                       A",
+           "AAABBBBBBBBBBBBBBBBBAA                  AABAAABBBBBBBAAA                                                                                                                                                                                                       A",
+           "AAAAAAAAAAAAAAAAAAAAAA                  AAAAAAAAAAAAAAAAAAAAA                                                                                                                                                                                                       A",
+           "AAAB                                 AAAA                   X                                                                                                                                                                 A",
+           "AAA                                                         Y          BAAB                                                                                                                                                             A",
+           "AAA                                                         Y        A                                                                                                                                                                A",
+           "AAA                                                         Y      A                                                                                                                                                                  A",
+           "AAA                                                         Y    A                                                                                                                                                                    A",
+           "AAA        BAAAAAAAAAB                  BAAAAAAAAB  A  A  A Y B                                                                                                                                                                                             A",
+           "AAA        AAAAAAAAAAA                  A                   Y                                                                                                                                                                                  A",
+           "AAA      AAAAAAAAAAAAB                  A                   Y                                                                                                                                                                                  A",
+           "AAA                  X                  A                   Y                                                                                                                                                                A",
+           "AAA                  Y                  A                   Y                                                                                                                                                                A",  
+           "AAA                  Y                  A                   Y                                                                                                                                                                A",
+           "AAAA                 Y                  A                   Z                                                                                                                                                                 A",
+           "AAA                  Y                  A   BB     B  B  B  B                                                                                                                                                                   A",
+           "AAA                  Z                  A   AA                 ABB                                                                                                                                                            A",
+           "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAB          A   AA                 X  ABB                                                                                                                                                                                      A",
+           "AAABAAABAAABAAABAAABAA       X              AA                 Y    ABB                                                                                                                                                                           A",
+           "AABABABABABABABABABABA       Y              AA                 Y      ABB                                                                                                                                                                         A",
+           "AAAAABAAABAAABAAABAAAA       Z    B         AA                 Z        ABB                                                                                                                                                                       A",
+           "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",]
+
+
 if __name__ == "__main__":
     main()
