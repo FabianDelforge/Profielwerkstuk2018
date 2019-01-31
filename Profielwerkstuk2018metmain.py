@@ -17,7 +17,10 @@ screen = pygame.display.set_mode((display_width, display_height), 0, 32)
 pygame.display.set_caption("Profielwerkstuk 2018")
 timer = pygame.time.Clock()
 
+level_count = 3
+
 def main():
+    global level_count
     level_playing = show_start_screen(screen)
     
     up = down = left = right = running = False
@@ -68,7 +71,8 @@ def main():
             entities.remove(player)
             entities.remove(platforms)
             entities.remove(backgrounds)
-            level_playing = build_level(level_2)
+            level_count += 1
+            level_playing = build_level(level_count)
             camera = Camera(complex_camera, level_playing[0], level_playing[1])
             player = level_playing[2]
             platforms = level_playing[3]
@@ -139,28 +143,8 @@ def show_start_screen(screen):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = event.pos   #geeft positie van de muis
                 if play_button.rect.collidepoint(mouse_pos):
-                    level_1 = build_level( [        #hier staat trouwens LEVEL_EEN, niet LEVEL_L (kut font)
-                                            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-                                            "A                ABA                                                                                A",
-                                            "A                ABA                                                                                A",
-                                            "A                ABA                                                                                A",
-                                            "A                ABA                                                                                A",
-                                            "A                ABA                                                                       BAAAB    A",
-                                            "A                ABA                                                                       A   A    A",
-                                            "A                ABA                                                                       A   A    A",
-                                            "A                ABA                BAAAAAAAAAAAAAAAAAAAAB                              AAAA   A    A",
-                                            "A                ABA                                 A                               AAA       A    A", 
-                                            "A                ABA                                 A                            AAA          A    A",
-                                            "A                ABA                                 A                         AAA             A    A",
-                                            "A                ABAAAAAAAB                          A                      BAA                A    A",
-                                            "A                AAAAAAAAAA                          BAAAAAAAAAAAAAAB                      BBBBB    B",
-                                            "A                X        X                                                                B        B",
-                                            "A                Y        Y                                                                B        B",
-                                            "A       P        Y        Y           BAAAAB                                               B   E    B",
-                                            "A                Y        Y                                                                B        B",
-                                            "A                Z        Z                                                                B        B",
-                                            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBBBBBBBBB",] )
-                    return level_1
+                    level_playing = build_level(level_count)
+                    return level_playing
 
                 if quit_button.rect.collidepoint(mouse_pos):
                     pygame.quit()
@@ -187,7 +171,7 @@ class Player(Entity):
         self.rect = self.image.get_rect(topleft=(x,y))
 
     def load_images(self):
-        character_folder = "C:/Users/Gebruiker/Downloads/Profielwerkstuk/Character Sprites/"
+        character_folder = "/Profielwerkstuk/Character Sprites/"
         self.standing_frame_right = pygame.image.load(os.path.join(character_folder, "pws_character_sprite_rest.png")).convert_alpha()
         self.standing_frame_right = pygame.transform.scale(self.standing_frame_right, tuple([int(i*0.15) for i in self.standing_frame_right.get_rect().size]))
         self.walking_frame_startup_right = pygame.image.load(os.path.join(character_folder, "pws_character_sprite_run_2.png"))
@@ -254,7 +238,10 @@ class Player(Entity):
         if left:
             self.xvel = -8
         if right:
-            self.xvel = 8 
+            self.xvel = 8
+        mod_bitmask_crouch = pygame.key.get_mods() #http://www.poketcode.com/en/pygame/keyboard/index.html voor uitleg
+        if mod_bitmask_crouch & pygame.KMOD_LSHIFT: 
+                self.xvel /= 2
         if not self.onGround:
             #zwaartekracht als je niet op een platform staat
             self.yvel += 0.35
@@ -292,7 +279,7 @@ class Player(Entity):
                 if isinstance(p, ExitBlock):
                     return "NextLevel"
 
-object_folder = "C:/Users/Gebruiker/Downloads/Profielwerkstuk/Objects/"
+object_folder = "/Profielwerkstuk/Objects/"
 class Platform(Entity):
     def __init__(self, x, y, number):
         Entity.__init__(self)
@@ -325,7 +312,14 @@ class ExitBlock(Entity):
         self.rect = self.image.get_rect(topleft=(x,y))
 
 
-def build_level(level):
+def build_level(level_count):
+    level = ""
+    if level_count == 1:
+        level = level_1
+    elif level_count == 2:
+        level = level_2
+    elif level_count == 3:
+        level = level_3
     platforms = []
     backgrounds = []
     x = y = 0
@@ -361,12 +355,34 @@ def build_level(level):
             x += 32
         y += 32
         x = 0
-
+    
     total_level_width  = len(level[0])*32 #lengte level berekenen in pixels
     total_level_height = len(level)*32
 
     levelList = [total_level_width, total_level_height, player, platforms, backgrounds]
     return levelList
+
+    
+level_1 = ["AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+           "A                ABA                                                                                A",
+           "A                ABA                                                                                A",
+           "A                ABA                                                                                A",
+           "A                ABA                                                                                A",
+           "A                ABA                                                                       BAAAB    A",
+           "A                ABA                                                                       A   A    A",
+           "A                ABA                                                                       A   A    A",
+           "A                ABA                BAAAAAAAAAAAAAAAAAAAAB                              AAAA   A    A",
+           "A                ABA                                 A                               AAA       A    A", 
+           "A                ABA                                 A                            AAA          A    A",
+           "A                ABA                                 A                         AAA             A    A",
+           "A                ABAAAAAAAB                          A                      BAA                A    A",
+           "A                AAAAAAAAAA                          BAAAAAAAAAAAAAAB                      BBBBB    B",
+           "A                X        X                                                                B        B",
+           "A                Y        Y                                                                B        B",
+           "A       P        Y        Y           BAAAAB                                               B   E    B",
+           "A                Y        Y                                                                B        B",
+           "A                Z        Z                                                                B        B",
+           "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBBBBBBBBB"]
 
 level_2 =  ["AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
             "A                ABA                                           A                                      A",
@@ -394,29 +410,29 @@ level_3 = ["AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
            "A                    X                  AAAAAAAAAAAAAAAA         X                                                                                                         ABA       ABA       ABA                        A",
            "A       P            Y                  AAAABBBBBBBBAAAA         Y                                                                                                         ABA       ABA       ABA                        A",
            "A                    Y                  AAABAAAAAAAABAAA         Y                                                                                                         ABA       ABA       ABA                        A",
-           "A                    Z                  AABAABBBBBBAABAA         Y                B   B                                                                                    ABA       ABA       ABA                        A",
-           "AAAAAAAAAAAAAAAAAAAAAA                  AABABAAAAAABABAA         Z                A   A                                                                                    ABA       ABA       ABA                        A",
-           "AAABBBBBBBBBBBBBBBBBAA                  AABABABBBBBAABAAA        BAAAAAAAAAAAAAAAAAAAAAAA                                                                                  ABA       ABA       ABA       AAAAAAAAA        A",
+           "A                    Z                  AABAABBBBBBAABAA         Y               B    B                                                                                    ABA       ABA       ABA                        A",
+           "AAAAAAAAAAAAAAAAAAAAAA                  AABABAAAAAABABAA         Z               A    A                                                                                    ABA       ABA       ABA                        A",
+           "AAABBBBBBBBBBBBBBBBBAA                  AABABABBBBBAABAA         BAAAAAAAAAAAAAAAAAAAAAAA                                                                                  ABA       ABA       ABA       AAAAAAAAA        A",
            "AAABAAAAAAABAAAAAAABAA                  AABAABAAAAAAABAA                               A                                                                                   ABA       ABA       ABA       ABA              A",
-           "AAABBBBBBBBBBBBBBBBBAA                  AABAAABBBBBBBAAA                               A  B                                                                                ABA       ABA       ABA       ABA              A",
-           "AAAAAAAAAAAAAAAAAAAAAA                  AAAAAAAAAAAAAAAAAAAAA                          A                                                                                   ABA       AAA       ABA      AABA              A",
-           "AAAB                                 AAAA                   X                          A     B                                                                             ABA       X X       ABA       ABA              A",
-           "AAA                                                         Y          BAAB            A               BB                                                                  ABA       Y Y       ABA       ABA              A",
-           "AAA                                                         Y        A                 A        BB  BB                                                                     ABA       Z Z       ABAA      ABA              A",
-           "AAA                                                         Y      A                   X              BBBBBBB                                     B                        ABA       AAA       ABA       ABA              A",
-           "AAA                                                         Y    A                     Y              X     A                                     B                        ABAA      ABA       ABA       ABA              A",
-           "AAA        BAAAAAAAAAB                  BAAAAAAAAB  A  A  A Y B                        Y              Y     A                                     B                        ABA       ABA      AABA      AABA              A",
-           "AAA        AAAAAAAAAAA                  A                   Y                          Z              Z     A    BAAB                   BAAAB     BAAAAAAAAAAAAAB          AAA       ABA       ABA       ABA              A",
-           "AAA      AAAAAAAAAAAAB                  A                   Y    AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA                                          A                   X X      AABA       ABA       ABA              A",
-           "AAA                  X                  A                   Y                          A                               BAB                             A                   Y Y       ABA       ABAA      ABA              A",
-           "AAA                  Y                  A                   Y                          A                                                               A                   Z Z       ABA       AAA       ABA              A",  
-           "AAA                  Y                  A                   Y                          A                                          BAAB                 A                   AAA       ABAA      X X       ABA              A",
-           "AAAA                 Y                  A                   Z                          A                                                               A                   ABA       ABA       Y Y      AABA              A",
-           "AAA                  Y                  A   BB     B  B  B  B                          A                                                               A                   ABA       ABA       Z Z       ABA              A",
-           "AAA                  Z                  A   AA                 ABB                     A                                  AAAAAA                       A                   ABA       ABA       AAA       ABA              A",
-           "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAB          A   AA                 X  ABB                  A                                                               A                   AAA       AAA       ABA       ABA              A",
-           "AAABAAABAAABAAABAAABAA       X              AA      B  B  B    Y    ABB                A                                                               X                   X X       X X       ABA       ABA        E     A",
-           "AABABABABABABABABABABA       Y              AA                 Y      ABB              A                                            AAA                Y                   Y Y       Y Y       ABA       ABA              A",
+           "AAABBBBBBBBBBBBBBBBBAA                  AABAAABBBBBBBAAA                               A  B                                                                                ABA       AAA       ABA       ABA              A",
+           "AAAAAAAAAAAAAAAAAAAAAA                  AAAAAAAAAAAAAAAAAAAAA                          A                                                                                   ABA       X X       ABAA      ABA              A",
+           "AAAB                                 AAAA                   X                          A     B                                                                             ABA       Y Y       ABA       ABA              A",
+           "AAA                                                         Y          BAAB            A          BB                                                                       ABA       Y Y       ABA       ABA              A",
+           "AAA                                                         Y        A                 A             BBBBBBBB                                                              ABA       Z Z       ABA      AABA              A",
+           "AAA                                                         Y      A                   X              X     A                                     B                        ABA       AAA       ABA       ABA              A",
+           "AAA                                                         Y    A                     Y              Y     A                                     B                        ABAA      ABA       ABA       ABA              A",
+           "AAA        BAAAAAAAAAB               BAAAAAAAAAAAB  A  A  A Y B                        Y              Y     A                                     B                        AAA       ABA      AABAA      ABA              A",
+           "AAA        AAAAAAAAAAA                  A                   Y                          Z              Z     A    BAAB                   BAAAB     BAAAAAAAAAAAAAB          X X       ABA       ABA       ABA              A",
+           "AAA      AAAAAAAAAAAAB                  A                   Y    AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA                                          A                   Y Y      AABA       AAA       ABA              A",
+           "AAA                  X                  A                   Y                          A                               BAB                             A                   Y Y       ABA       X X       ABA              A",
+           "AAA                  Y                  A                   Y                          A                                                               A                   Z Z       ABA       Y Y      AABA              A",  
+           "AAA                  Y                  A                   Y                          A                                          BAAB                 A                  AAAA       ABAA      Y Y       ABA              A",
+           "AAAA                 Y                  A                   Z                          A                                                               A                   ABA       ABA       Z Z       ABA              A",
+           "AAA                  Y                  A   BB     B  B  B  B                          A                                                               A                   ABA       ABA       AAA       ABA              A",
+           "AAA                  Z                  A   AA                 ABB                     A                                                               A                   ABA       ABA       ABA       ABA              A",
+           "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAB          A   AA                 X  ABB                  A                                 AAAAAA                        A                   AAA       AAA       ABA      AABA              A",
+           "AAABAAABAAABAAABAAABAA       X              AAB                Y    ABB                A                                                               X                   X X       X X       ABA       ABA        E     A",
+           "AABABABABABABABABABABA       Y              AA                 Y      ABB              A                                                               Y                   Y Y       Y Y       ABA       ABA              A",
            "AAAAABAAABAAABAAABAAAA       Z              AA                 Z        ABB            A                                                               Z                   Z Z       Z Z       ABA       ABA              A",
            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",]
 
