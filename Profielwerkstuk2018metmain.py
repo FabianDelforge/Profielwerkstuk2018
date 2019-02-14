@@ -17,7 +17,7 @@ screen = pygame.display.set_mode((display_width, display_height), 0, 32)
 pygame.display.set_caption("Profielwerkstuk 2018")
 timer = pygame.time.Clock()
 
-level_count = 3
+level_count = 1
 
 def main():
     global level_count
@@ -121,8 +121,6 @@ class Entity(pygame.sprite.Sprite):
 
 class Button():
     def __init__(self, x, y, width, height, colour, txt):
-        #extra geeft de ruimte aan in pixels die nodig is om de text ongeveer in het midden van de knop te zetten
-        
         self.image = pygame.Surface((width, height)).convert()
         self.image.fill(colour)
         self.rect = Rect(x, y, width, height)
@@ -320,6 +318,8 @@ def build_level(level_count):
         level = level_2
     elif level_count == 3:
         level = level_3
+    else:
+        show_end_screen()
     platforms = []
     backgrounds = []
     x = y = 0
@@ -436,6 +436,22 @@ level_3 = ["AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
            "AAAAABAAABAAABAAABAAAA       Z              AA                 Z        ABB            A                                                               Z                   Z Z       Z Z       ABA       ABA              A",
            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",]
 
+def show_end_screen():
+    screen.fill((10,100,100))
+    font = pygame.font.SysFont('Arial', 40)
+    text = font.render("Thanks for playing!", True, (0,0,0))
+    screen.blit(text, (260, 180))
+    quit_button = Button(300, 400, 200, 60, (150,15,15), "Quit")
+    showEndScreen = True
+    while showEndScreen:
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = event.pos   #geeft positie van de muis
+                if quit_button.rect.collidepoint(mouse_pos):
+                    pygame.quit()
+                    exit()
+        pygame.display.update()
+    
 
 if __name__ == "__main__":
     main()
