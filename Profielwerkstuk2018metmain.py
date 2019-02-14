@@ -17,7 +17,7 @@ screen = pygame.display.set_mode((display_width, display_height), 0, 32)
 pygame.display.set_caption("Profielwerkstuk 2018")
 timer = pygame.time.Clock()
 
-level_count = 1
+level_count = 3
 
 def main():
     global level_count
@@ -160,9 +160,9 @@ class Player(Entity):
         self.onGround = False
         self.walking = False
         self.frame_change = 80      #na hoeveel aantal ticks het character frame verandert
-        self.walking_startup = 1
+        self.walking_startup = 1    #als hij net begint met lopen: 1   als hij al loopt: _run_2 niet laten zien, dus 0
         self.goingRight = 1         #kijkend naar rechts: 1       kijkend naar links: 0
-        self.load_images()          #als hij net begint met lopen: 1   als hij al loopt: _run_2 niet laten zien, dus 0
+        self.load_images()          
         self.last_update = 0        #telt aantal ticks sinds laatste keer dat het character frame is veranderd tijdens het lopen
         self.current_frame = 0
         self.image = self.standing_frame_right
@@ -417,7 +417,7 @@ level_3 = ["AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
            "AAABBBBBBBBBBBBBBBBBAA                  AABAAABBBBBBBAAA                               A  B                                                                                ABA       AAA       ABA       ABA              A",
            "AAAAAAAAAAAAAAAAAAAAAA                  AAAAAAAAAAAAAAAAAAAAA                          A                                                                                   ABA       X X       ABAA      ABA              A",
            "AAAB                                 AAAA                   X                          A     B                                                                             ABA       Y Y       ABA       ABA              A",
-           "AAA                                                         Y          BAAB            A          BB                                                                       ABA       Y Y       ABA       ABA              A",
+           "AAA                                                         Y          BAAB            A         BB B                                                                      ABA       Y Y       ABA       ABA              A",
            "AAA                                                         Y        A                 A             BBBBBBBB                                                              ABA       Z Z       ABA      AABA              A",
            "AAA                                                         Y      A                   X              X     A                                     B                        ABA       AAA       ABA       ABA              A",
            "AAA                                                         Y    A                     Y              Y     A                                     B                        ABAA      ABA       ABA       ABA              A",
@@ -450,6 +450,13 @@ def show_end_screen():
                 if quit_button.rect.collidepoint(mouse_pos):
                     pygame.quit()
                     exit()
+            if event.type == QUIT:
+                pygame.quit()
+                exit()
+            if event.type == KEYDOWN and e.key == K_ESCAPE:
+                pygame.quit()
+                exit()
+            
         pygame.display.update()
     
 
